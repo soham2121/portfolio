@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Soham Desai — AI/ML & Game Developer</title>
-<meta name="description" content="Portfolio of Soham Desai, B.Tech AI & ML student building AI systems, backend services, IoT prototypes and Unity games.">
+<title>Soham Desai — AI/ML, Software & Game Developer</title>
+<meta name="description" content="Portfolio of Soham Desai, B.Tech AI & ML student building AI-powered software, games and hardware experiments.">
+<script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
@@ -12,151 +13,273 @@
   :root {
     --bg: #0b0e14;
     --surface: #121722;
+    --surface-2: #161c29;
     --border: #1f2735;
+    --border-hi: #2e3a4f;
     --text: #e6e9ef;
+    --body: #c5cbd6;
     --muted: #8b95a7;
     --accent: #4fd1c5;
     --accent-2: #7c9cff;
+    --glow: rgba(79, 209, 197, .12);
     --mono: "JetBrains Mono", ui-monospace, monospace;
+    --ease: cubic-bezier(.2, .7, .2, 1);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+  html { scroll-behavior: smooth; scroll-padding-top: 76px; }
   body {
     background: var(--bg);
     color: var(--text);
     font: 16px/1.6 "Space Grotesk", system-ui, sans-serif;
     background-image: radial-gradient(circle at 1px 1px, #1a2130 1px, transparent 0);
     background-size: 28px 28px;
+    overflow-x: clip;
   }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
-  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding-inline: 16px; }
 
+  /* ---------- nav ---------- */
   header {
     position: sticky; top: 0; z-index: 10;
     background: rgba(11, 14, 20, .85);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border);
   }
-  nav { display: flex; align-items: center; gap: 24px; height: 60px; }
+  nav { display: flex; align-items: center; gap: 24px; height: 64px; }
   .logo { font-family: var(--mono); font-weight: 600; color: var(--text); }
   .logo span { color: var(--accent); }
-  .links { display: flex; gap: 20px; margin-left: auto; font-size: 14px; }
-  .links a { color: var(--muted); }
-  .links a:hover { color: var(--text); text-decoration: none; }
-  .btn {
-    display: inline-block; padding: 10px 18px; border-radius: 8px;
-    background: var(--accent); color: #06201d; font-weight: 700; font-size: 14px;
+  .logo:hover { text-decoration: none; }
+  .links { display: flex; gap: 22px; margin-left: auto; font-size: 14px; }
+  .links a { color: var(--muted); position: relative; padding: 4px 0; transition: color .2s; }
+  .links a::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px;
+    background: var(--accent); border-radius: 2px; transform: scaleX(0); transition: transform .25s var(--ease);
   }
-  .btn:hover { text-decoration: none; filter: brightness(1.1); }
-  .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
-  @media (max-width: 760px) { .links { display: none; } nav .btn { margin-left: auto; } }
+  .links a:hover, .links a.active { color: var(--text); text-decoration: none; }
+  .links a.active::after { transform: scaleX(1); }
 
-  section { padding: 72px 0; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; border-radius: 8px;
+    background: var(--accent); color: #06201d; font: 700 14px/1.2 inherit; border: 1px solid var(--accent);
+    cursor: pointer; transition: transform .2s var(--ease), box-shadow .2s, background .2s, border-color .2s;
+  }
+  .btn:hover { text-decoration: none; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(79, 209, 197, .25); }
+  .btn.ghost { background: transparent; color: var(--text); border-color: var(--border); }
+  .btn.ghost:hover { border-color: var(--accent); box-shadow: none; }
+  .btn.big { padding: 14px 26px; font-size: 16px; }
+
+  @media (max-width: 760px) {
+    nav { flex-wrap: wrap; height: auto; padding-top: 12px; row-gap: 8px; }
+    nav .btn { margin-left: auto; }
+    .links { order: 3; width: 100%; margin: 0; gap: 18px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+    .links::-webkit-scrollbar { display: none; }
+    html { scroll-padding-top: 112px; }
+  }
+
+  /* ---------- sections ---------- */
+  section { padding-top: 120px; }
+  main > section:last-child { padding-bottom: 96px; }
+  @media (max-width: 700px) { section { padding-top: 88px; } section.hero { padding-top: 72px; } }
   .label {
     font-family: var(--mono); font-size: 13px; color: var(--accent);
     letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px;
   }
-  h2 { font-size: clamp(26px, 4vw, 34px); margin-bottom: 32px; }
-  h3 { font-size: 19px; }
+  h2 { font-size: clamp(26px, 4vw, 34px); line-height: 1.2; margin-bottom: 32px; }
+  h3 { font-size: 19px; line-height: 1.3; }
   .muted { color: var(--muted); }
+  .sub-head {
+    font-family: var(--mono); font-size: 13px; color: var(--muted); font-weight: 400;
+    text-transform: uppercase; letter-spacing: .08em; margin: 40px 0 16px;
+  }
 
-  .hero { padding: 96px 0 72px; }
+  /* ---------- hero ---------- */
+  .hero { padding-top: 104px; }
   .status {
     display: inline-flex; align-items: center; gap: 8px;
     font-family: var(--mono); font-size: 13px; color: var(--muted);
     border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; margin-bottom: 24px;
+    background: rgba(18, 23, 34, .6);
   }
   .status::before {
     content: ""; width: 8px; height: 8px; border-radius: 50%;
-    background: #3ddc84; box-shadow: 0 0 8px #3ddc84;
+    background: #3ddc84; box-shadow: 0 0 8px #3ddc84; animation: pulse 2.4s ease-in-out infinite;
   }
-  .hero h1 { font-size: clamp(40px, 8vw, 72px); line-height: 1.05; letter-spacing: -.02em; }
-  .hero h1 em {
-    font-style: normal;
+  @keyframes pulse { 50% { box-shadow: 0 0 2px #3ddc84; } }
+  .hero h1 { font-size: clamp(38px, 7.5vw, 68px); line-height: 1.07; letter-spacing: -.02em; }
+  .grad {
     background: linear-gradient(90deg, var(--accent), var(--accent-2));
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .hero p.lead { font-size: 19px; color: var(--muted); max-width: 640px; margin: 20px 0 32px; }
+  .hero p.lead { font-size: 19px; color: var(--muted); max-width: 640px; margin: 22px 0 32px; }
   .cta { display: flex; gap: 12px; flex-wrap: wrap; }
   .stats {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    display: grid; grid-template-columns: repeat(4, 1fr);
     gap: 12px; margin-top: 56px;
   }
+  @media (max-width: 700px) { .stats { grid-template-columns: repeat(2, 1fr); } }
   .stat { border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 18px; }
   .stat b { display: block; font-size: 28px; }
   .stat span { font-size: 13px; color: var(--muted); }
+  .hero > * { animation: rise .7s var(--ease) both; }
+  .hero > :nth-child(2) { animation-delay: .08s; }
+  .hero > :nth-child(3) { animation-delay: .16s; }
+  .hero > :nth-child(4) { animation-delay: .24s; }
+  .hero > :nth-child(5) { animation-delay: .32s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 
+  /* ---------- cards ---------- */
   .card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 14px; padding: 24px; transition: border-color .2s, transform .2s;
+    border-radius: 14px; padding: 24px;
+    transition: border-color .25s, transform .25s var(--ease), box-shadow .25s, background .25s;
   }
-  .card:hover { border-color: #2e3a4f; transform: translateY(-2px); }
+  .card:hover {
+    border-color: rgba(79, 209, 197, .35); background: var(--surface-2);
+    transform: translateY(-4px); box-shadow: 0 12px 32px -12px rgba(0, 0, 0, .6), 0 0 0 1px var(--glow), 0 0 28px -6px var(--glow);
+  }
+  .card p { color: var(--body); margin-top: 8px; }
+  .kind { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-bottom: 6px; }
   .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
+  .grid-3 { display: grid; gap: 16px; grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 960px) { .grid-3 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px) { .grid-3 { grid-template-columns: 1fr; } }
 
-  .job-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-  .date { font-family: var(--mono); font-size: 13px; color: var(--muted); }
-  ul.bullets { padding-left: 18px; color: #c5cbd6; }
-  ul.bullets li { margin: 6px 0; }
-  ul.bullets li::marker { color: var(--accent); }
+  .project { display: flex; flex-direction: column; }
+  .card-foot { margin-top: auto; padding-top: 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+  .card-foot .tags { margin-top: 0; }
+  .card-link { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
 
   .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
   .tag {
     font-family: var(--mono); font-size: 12px; padding: 3px 10px; border-radius: 6px;
     background: rgba(79, 209, 197, .1); color: var(--accent); border: 1px solid rgba(79, 209, 197, .25);
+    transition: background .2s, border-color .2s;
   }
+  .tag:hover { background: rgba(79, 209, 197, .18); border-color: rgba(79, 209, 197, .45); }
   .tag.alt { background: rgba(124, 156, 255, .1); color: var(--accent-2); border-color: rgba(124, 156, 255, .25); }
-  .card p { color: #c5cbd6; margin-top: 8px; }
-  .kind { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .tag.alt:hover { background: rgba(124, 156, 255, .18); border-color: rgba(124, 156, 255, .45); }
+  .tag.clone { background: transparent; color: var(--muted); border-color: var(--border-hi); }
 
-  .mini { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
-  .mini .tag { font-size: 13px; padding: 6px 12px; }
+  /* ---------- about ---------- */
+  .about-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: start; }
+  .about-grid p { color: var(--body); font-size: 17px; }
+  .about-grid p + p { margin-top: 14px; }
+  .interests { display: flex; flex-wrap: wrap; gap: 8px; }
+  .interests .tag { font-size: 13px; padding: 7px 12px; }
+  @media (max-width: 760px) { .about-grid { grid-template-columns: 1fr; } }
 
+  /* ---------- projects extras ---------- */
+  .also {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    margin-top: 24px; padding: 18px 20px; border: 1px dashed var(--border-hi); border-radius: 14px;
+  }
+  .also .muted { font-family: var(--mono); font-size: 13px; margin-right: 4px; }
+  .chip {
+    font-family: var(--mono); font-size: 13px; padding: 6px 12px; border-radius: 6px;
+    background: rgba(124, 156, 255, .1); color: var(--accent-2); border: 1px solid rgba(124, 156, 255, .25);
+    transition: transform .2s var(--ease), background .2s, border-color .2s;
+  }
+  .chip:hover { transform: translateY(-2px); background: rgba(124, 156, 255, .18); border-color: rgba(124, 156, 255, .5); }
+  .more-bar { display: flex; justify-content: center; margin-top: 32px; }
+  #more-projects { margin-top: 24px; }
+  #more-projects[hidden] { display: none; }
+  .all-link { text-align: center; margin-top: 24px; font-family: var(--mono); font-size: 14px; }
+
+  /* ---------- experience ---------- */
+  .job { border-left: 3px solid var(--accent); }
+  .job-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .date { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  ul.bullets { padding-left: 18px; color: var(--body); }
+  ul.bullets li { margin: 7px 0; }
+  ul.bullets li::marker { color: var(--accent); }
+  ul.bullets b { color: var(--text); font-weight: 500; }
+  .pill {
+    display: inline-block; font-family: var(--mono); font-size: 12px; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px;
+  }
+  .pill.live { color: #3ddc84; border-color: rgba(61, 220, 132, .35); }
+
+  /* ---------- stack ---------- */
   .stack-row { display: grid; grid-template-columns: 200px 1fr; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--border); }
-  .stack-row:last-child { border-bottom: 0; }
+  .stack-row:first-child { padding-top: 0; }
+  .stack-row:last-child { border-bottom: 0; padding-bottom: 0; }
   .stack-row h3 { font-size: 15px; font-family: var(--mono); color: var(--muted); font-weight: 400; }
   .stack-row .tags { margin-top: 0; }
   @media (max-width: 600px) { .stack-row { grid-template-columns: 1fr; gap: 8px; } }
 
-  .list { list-style: none; }
-  .list li { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
-  .list li:last-child { border-bottom: 0; }
-  .list li span:last-child { font-family: var(--mono); font-size: 13px; color: var(--muted); white-space: nowrap; }
+  /* ---------- leadership ---------- */
+  .feature {
+    border: 1px solid transparent;
+    background: linear-gradient(var(--surface), var(--surface)) padding-box,
+                linear-gradient(120deg, var(--accent), var(--accent-2)) border-box;
+    padding: 32px; margin-bottom: 16px;
+  }
+  .feature:hover { background: linear-gradient(var(--surface-2), var(--surface-2)) padding-box, linear-gradient(120deg, var(--accent), var(--accent-2)) border-box; }
+  .feature h3 { font-size: clamp(21px, 3vw, 26px); }
+  .feature p { font-size: 17px; }
 
+  /* ---------- honors ---------- */
+  .list { list-style: none; }
+  .list li { display: flex; justify-content: space-between; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .list li:first-child { padding-top: 0; }
+  .list li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .list li span:last-child { font-family: var(--mono); font-size: 13px; color: var(--muted); white-space: nowrap; }
+  .earlier { margin-top: 18px; font-size: 14px; color: var(--muted); }
+  .earlier b { font-family: var(--mono); font-size: 12px; font-weight: 400; text-transform: uppercase; letter-spacing: .08em; margin-right: 8px; }
+
+  /* ---------- contact ---------- */
   .contact { text-align: center; }
-  .contact p { max-width: 520px; margin: 0 auto 28px; }
-  .contact .cta { justify-content: center; }
+  .contact .status { margin-bottom: 20px; }
+  .contact h2 { margin-bottom: 16px; }
+  .contact p.lead { max-width: 560px; margin: 0 auto 32px; color: var(--muted); font-size: 18px; }
+  .contact-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 760px; margin: 40px auto 0; text-align: left; }
+  .contact-links a { display: block; color: var(--text); padding: 18px 20px; }
+  .contact-links a:hover { text-decoration: none; }
+  .contact-links small { display: block; font-family: var(--mono); font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; }
+  .contact-links span { overflow-wrap: anywhere; }
+  @media (max-width: 700px) { .contact-links { grid-template-columns: 1fr; } }
   footer { border-top: 1px solid var(--border); padding: 24px 0; font-size: 13px; color: var(--muted); text-align: center; }
+
+  /* ---------- scroll reveal (only when JS runs) ---------- */
+  .js .reveal { opacity: 0; transform: translateY(16px); }
+  .js .reveal.in {
+    opacity: 1; transform: none;
+    transition: opacity .55s var(--ease), transform .55s var(--ease), border-color .25s, box-shadow .25s, background .25s;
+    transition-delay: calc(var(--i, 0) * 70ms), calc(var(--i, 0) * 70ms), 0s, 0s, 0s;
+  }
+  .js .card.reveal.in:hover { transform: translateY(-4px); transition-delay: 0s; }
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .card { transition: none; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .js .reveal { opacity: 1; transform: none; }
+    .card:hover, .js .card.reveal.in:hover, .chip:hover, .btn:hover { transform: none; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <nav class="wrap">
+  <nav class="wrap" aria-label="Main">
     <a class="logo" href="#top">soham<span>.dev</span></a>
     <div class="links">
-      <a href="#experience">Experience</a>
-      <a href="#freelance">Freelance</a>
+      <a href="#about">About</a>
       <a href="#projects">Projects</a>
+      <a href="#experience">Experience</a>
       <a href="#stack">Stack</a>
-      <a href="#leadership">Leadership</a>
-      <a href="#honors">Honors</a>
-      <a href="#education">Education</a>
+      <a href="#contact">Contact</a>
     </div>
-    <a class="btn" href="#contact">Get in Touch</a>
+    <a class="btn" href="#contact">Contact Me →</a>
   </nav>
 </header>
 
 <main id="top">
   <section class="hero wrap">
-    <div class="status">Open to AI / ML &amp; software internships</div>
-    <h1>Hi, I'm Soham Desai.<br><em>I build AI systems &amp; games.</em></h1>
-    <p class="lead">B.Tech AI &amp; ML student at Atlas Skilltech University, Mumbai. I work across machine learning, backend development, mobile apps, IoT prototypes and Unity games.</p>
+    <div class="status">Open to work · Mumbai, India</div>
+    <h1>Hi, I'm Soham Desai.<br><span class="grad">I build AI-powered software, games &amp; hardware experiments.</span></h1>
+    <p class="lead">B.Tech AI &amp; ML student at Atlas Skilltech University, working across machine learning, backend and mobile development, Unity games, and drones &amp; IoT.</p>
     <div class="cta">
       <a class="btn" href="#projects">View Projects</a>
       <a class="btn ghost" href="https://github.com/soham2121" target="_blank" rel="noopener">GitHub</a>
@@ -164,186 +287,336 @@
     </div>
     <div class="stats">
       <div class="stat"><b>1</b><span>AI startup internship</span></div>
-      <div class="stat"><b>12+</b><span>Projects shipped</span></div>
+      <div class="stat"><b>20+</b><span>Projects built</span></div>
       <div class="stat"><b>SIH '24</b><span>Hackathon shortlist</span></div>
       <div class="stat"><b>1st</b><span>National game design</span></div>
     </div>
   </section>
 
-  <section id="experience" class="wrap">
-    <div class="label">01 / Experience</div>
-    <h2>Where I've worked</h2>
-    <div class="card">
-      <div class="job-head">
-        <div>
-          <h3>Software Development Intern</h3>
-          <div class="muted">Sypha.AI — AI-powered coding assistant</div>
-        </div>
-        <div class="date">Sep 2025 – Feb 2026</div>
-      </div>
-      <ul class="bullets">
-        <li>Contributed to an AI coding assistant platform built to improve developer productivity.</li>
-        <li>Integrated the Razorpay payment gateway, with backend workflows for subscription management and transaction verification.</li>
-        <li>Designed a prompt analysis module that evaluates and refines user prompts to improve the accuracy of AI-generated code.</li>
-        <li>Built an AI code adoption analytics system measuring how much generated code is used directly versus modified.</li>
-        <li>Built backend services in Python and Flask using REST APIs and structured data pipelines.</li>
-        <li>Worked in an agile team with Git-based version control.</li>
-      </ul>
-      <div class="tags">
-        <span class="tag">Python</span><span class="tag">Flask</span><span class="tag">REST APIs</span>
-        <span class="tag">Razorpay</span><span class="tag">Prompt Engineering</span><span class="tag">Analytics</span>
-      </div>
+  <section id="about" class="wrap">
+    <div class="reveal">
+      <div class="label">01 / About</div>
+      <h2>AI student who likes building across the stack</h2>
     </div>
-  </section>
-
-  <section id="freelance" class="wrap">
-    <div class="label">02 / Freelance</div>
-    <h2>Client &amp; independent work</h2>
-    <div class="grid">
-      <div class="card">
-        <div class="kind">Client project · Web app</div>
-        <h3>Imperio Selective Systems</h3>
-        <p>Window configurator and quoting platform for a window manufacturer. Homeowners, architects and builders design windows (size, frame colour, glass, mesh), upload bulk project files and get proforma quotes behind phone verification.</p>
-        <div class="tags"><span class="tag">Configurator</span><span class="tag">File Uploads</span><span class="tag">SMS Verification</span><span class="tag">Vercel</span></div>
-        <div class="tags"><a class="btn ghost" href="https://selective-window-config.vercel.app/" target="_blank" rel="noopener">Live site ↗</a></div>
+    <div class="about-grid">
+      <div class="reveal">
+        <p>I'm studying for a B.Tech in Artificial Intelligence &amp; Machine Learning (2024–2028). I learn by building: ML models, backend services, mobile apps, Unity games and drone hardware.</p>
+        <p>Most recently I interned at Sypha.AI, working on the backend of an AI coding assistant. Outside class I take on freelance work, enter hackathons and game jams, and mentor other students.</p>
       </div>
-      <div class="card">
-        <div class="kind">Mobile app · Fitness</div>
-        <h3>Forge</h3>
-        <p>Cross-platform fitness and health tracker: exercise library, workout presets, live workout logger, weekly and cycle scheduling, analytics, and food and calorie tracking with offline persistence.</p>
-        <div class="tags"><span class="tag">React Native</span><span class="tag">Expo</span><span class="tag">TypeScript</span><span class="tag">Supabase</span><span class="tag">Zustand</span></div>
-        <div class="tags"><a class="btn ghost" href="https://forge-umber-one.vercel.app" target="_blank" rel="noopener">Live demo ↗</a></div>
-      </div>
-      <div class="card">
-        <div class="kind"><span class="status" style="margin:0;padding:2px 10px">In progress</span></div>
-        <h3 style="margin-top:10px">Kala Vyasanga</h3>
-        <p>Curated marketplace for artisans, connecting handmade craft with buyers who value it.</p>
-        <div class="tags"><span class="tag">Marketplace</span><span class="tag">E-commerce</span></div>
+      <div class="reveal" style="--i:1">
+        <div class="kind">Areas I'm working in &amp; exploring</div>
+        <div class="interests" style="margin-top:10px">
+          <span class="tag">AI / Machine Learning</span>
+          <span class="tag">Software Development</span>
+          <span class="tag">Game Development</span>
+          <span class="tag alt">Cybersecurity</span>
+          <span class="tag alt">Computer Vision</span>
+          <span class="tag alt">Cloud / DevOps</span>
+          <span class="tag alt">Robotics / Drones</span>
+        </div>
       </div>
     </div>
   </section>
 
   <section id="projects" class="wrap">
-    <div class="label">03 / Projects</div>
-    <h2>Things I've built</h2>
-    <div class="grid">
-      <div class="card">
+    <div class="reveal">
+      <div class="label">02 / Projects</div>
+      <h2>Things I've built</h2>
+    </div>
+    <div class="grid-3 stagger">
+      <article class="card project">
+        <div class="kind">Mobile app · Fitness</div>
+        <h3>Forge</h3>
+        <p>Cross-platform fitness and health tracker with workout logging, weekly and cycle scheduling, analytics, and food and calorie tracking that works offline.</p>
+        <div class="card-foot">
+          <div class="tags"><span class="tag">React Native</span><span class="tag">Expo</span><span class="tag">TypeScript</span><span class="tag">Supabase</span></div>
+          <a class="card-link" href="https://forge-umber-one.vercel.app" target="_blank" rel="noopener">Live demo ↗</a>
+        </div>
+      </article>
+      <article class="card project">
         <div class="kind">AI / ML</div>
         <h3>Protein Structure Prediction</h3>
-        <p>Machine learning model that analyses protein sequence data and predicts structural patterns using computational techniques.</p>
-        <div class="tags"><span class="tag">Python</span><span class="tag">Machine Learning</span><span class="tag">Bioinformatics</span></div>
-      </div>
-      <div class="card">
-        <div class="kind">Full-stack / Mobile</div>
+        <p>Deep learning model that predicts 8-state protein secondary structure from amino-acid sequences, using multi-kernel CNN layers feeding a GRU.</p>
+        <div class="card-foot">
+          <div class="tags"><span class="tag">Python</span><span class="tag">PyTorch</span><span class="tag">CNN + GRU</span></div>
+          <a class="card-link" href="https://github.com/soham2121/Protein-prediction" target="_blank" rel="noopener">Code ↗</a>
+        </div>
+      </article>
+      <article class="card project">
+        <div class="kind">Full-stack · Health</div>
         <h3>MedVault</h3>
-        <p>Secure, centralized medical records platform. Patients and doctors access and manage health data with QR authentication, reducing manual errors.</p>
-        <div class="tags"><span class="tag">Spring Boot</span><span class="tag">React Native</span><span class="tag">QR Auth</span></div>
-      </div>
-      <div class="card">
-        <div class="kind">Game Dev</div>
+        <p>Medical records app for patients, doctors, lab technicians and admins. Patients share records through 5-minute QR access tokens with role-based access control.</p>
+        <div class="card-foot">
+          <div class="tags"><span class="tag">Spring Boot</span><span class="tag">React Native</span><span class="tag">MySQL</span></div>
+          <a class="card-link" href="https://github.com/soham2121/Centralized-Medical-App" target="_blank" rel="noopener">Code ↗</a>
+        </div>
+      </article>
+      <article class="card project">
+        <div class="kind">Big data · ML</div>
+        <h3>Steam × Twitch Game Analytics</h3>
+        <p>Joins Steam reviews with Twitch viewership in PySpark, scores games on a weighted trending index and trains a decision tree to classify popularity. Results go into a Power BI dashboard.</p>
+        <div class="card-foot">
+          <div class="tags"><span class="tag">PySpark</span><span class="tag">Spark MLlib</span><span class="tag">Power BI</span></div>
+          <a class="card-link" href="https://github.com/soham2121/Big-Data-Solo-Project" target="_blank" rel="noopener">Code ↗</a>
+        </div>
+      </article>
+      <article class="card project">
+        <div class="kind">Automation</div>
+        <h3>Piano Tiles Bot</h3>
+        <p>Python bot that plays Piano Tiles on its own. It reads screen pixels to detect tiles and clicks them as they arrive.</p>
+        <div class="card-foot">
+          <div class="tags"><span class="tag">Python</span><span class="tag">Pillow</span><span class="tag">PyAutoGUI</span></div>
+          <a class="card-link" href="https://github.com/soham2121/Piano-Tiles-Automated" target="_blank" rel="noopener">Code ↗</a>
+        </div>
+      </article>
+      <article class="card project">
+        <div class="kind">Game dev</div>
         <h3>Glitch Runner</h3>
         <p>Puzzle-platformer where intentionally coded glitches are the core mechanic. Players exploit them to solve levels.</p>
-        <div class="tags"><span class="tag">Unity</span><span class="tag">C#</span><span class="tag">Game Design</span></div>
-      </div>
-      <div class="card">
-        <div class="kind">IoT</div>
-        <h3>Smart Home Automation</h3>
-        <p>IoT prototype that automates household devices using sensors and microcontroller-based control.</p>
-        <div class="tags"><span class="tag">Arduino</span><span class="tag">Sensors</span><span class="tag">C++</span></div>
-      </div>
+        <div class="card-foot">
+          <div class="tags"><span class="tag">Unity</span><span class="tag">C#</span><span class="tag">Game Design</span></div>
+        </div>
+      </article>
     </div>
-    <div class="mini">
-      <span class="muted">Also built:</span>
-      <span class="tag alt">Royal Run · Unity</span>
-      <span class="tag alt">Zombie Shooter · Unity</span>
-      <span class="tag alt">Rocket Boost · Unity 2.5D</span>
-      <span class="tag alt">Defusal · Unity</span>
-      <span class="tag alt">Robotic Parking System · Arduino</span>
+
+    <div class="also reveal">
+      <span class="muted">Also built</span>
+      <span class="chip">Royal Run · Unity</span>
+      <span class="chip">Zombie Shooter · Unity</span>
+      <span class="chip">Rocket Boost · Unity 2.5D</span>
+      <span class="chip">Defusal · Unity</span>
+      <span class="chip">Robotic Parking System · Arduino</span>
+      <span class="chip">Smart Home Automation · Arduino</span>
+    </div>
+
+    <div class="more-bar">
+      <button class="btn ghost" id="more-toggle" aria-expanded="false" aria-controls="more-projects">More Projects →</button>
+    </div>
+
+    <div id="more-projects" hidden>
+      <div class="grid-3 stagger">
+        <article class="card project">
+          <div class="kind">Game · Game jam</div>
+          <h3>Lucid</h3>
+          <p>Cave platformer made for a game jam. A crystal lights up hidden obstacles as you guide Lucid out of the cave to find Gleam.</p>
+          <div class="card-foot">
+            <div class="tags"><span class="tag">JavaScript</span><span class="tag">p5.play</span></div>
+            <a class="card-link" href="https://github.com/soham2121/Adventure-GAME-JAM-" target="_blank" rel="noopener">Code ↗</a>
+          </div>
+        </article>
+        <article class="card project">
+          <div class="kind">Game</div>
+          <h3>Spacoids</h3>
+          <p>Space survival game: manage oxygen, fuel, energy, water and plants while exploring planets. Level progress is saved in the browser.</p>
+          <div class="card-foot">
+            <div class="tags"><span class="tag">JavaScript</span><span class="tag">p5.play</span></div>
+            <a class="card-link" href="https://github.com/soham2121/Spacoids" target="_blank" rel="noopener">Code ↗</a>
+          </div>
+        </article>
+        <article class="card project">
+          <div class="kind">Game</div>
+          <h3>Space Shooters</h3>
+          <p>Arcade space game with a menu, countdown, pause, star collecting, scoring and sound.</p>
+          <div class="card-foot">
+            <div class="tags"><span class="tag">JavaScript</span><span class="tag">p5.play</span></div>
+            <a class="card-link" href="https://github.com/soham2121/space-shooters" target="_blank" rel="noopener">Code ↗</a>
+          </div>
+        </article>
+        <article class="card project">
+          <div class="kind">Mobile app</div>
+          <h3>Book Santa</h3>
+          <p>Book donation app: donate or request books, track your donations and view receiver details, with notifications.</p>
+          <div class="card-foot">
+            <div class="tags"><span class="tag">React Native</span><span class="tag">Expo</span><span class="tag">Firebase</span></div>
+            <a class="card-link" href="https://github.com/soham2121/book-santa" target="_blank" rel="noopener">Code ↗</a>
+          </div>
+        </article>
+        <article class="card project">
+          <div class="kind">Mobile app</div>
+          <h3>Barter App</h3>
+          <p>Trading app where users sign up, post items and trade them with each other.</p>
+          <div class="card-foot">
+            <div class="tags"><span class="tag">React Native</span><span class="tag">Expo</span><span class="tag">Firebase</span></div>
+            <a class="card-link" href="https://github.com/soham2121/barter-app" target="_blank" rel="noopener">Code ↗</a>
+          </div>
+        </article>
+        <article class="card project">
+          <div class="kind">Mobile app</div>
+          <h3>Animal Care</h3>
+          <p>Animal care app with login, home and edit screens, notifications and settings.</p>
+          <div class="card-foot">
+            <div class="tags"><span class="tag">React Native</span><span class="tag">Expo</span><span class="tag">Firebase</span></div>
+            <a class="card-link" href="https://github.com/soham2121/animal-care" target="_blank" rel="noopener">Code ↗</a>
+          </div>
+        </article>
+        <article class="card project">
+          <div class="kind">Mobile app</div>
+          <h3>Buzzer App</h3>
+          <p>Buzzer app with a home screen and a buzzer screen, backed by Firebase.</p>
+          <div class="card-foot">
+            <div class="tags"><span class="tag">React Native</span><span class="tag">Expo</span><span class="tag">Firebase</span></div>
+            <a class="card-link" href="https://github.com/soham2121/Buzzer-app" target="_blank" rel="noopener">Code ↗</a>
+          </div>
+        </article>
+        <article class="card project">
+          <div class="kind">Game · Clone</div>
+          <h3>Angry Birds</h3>
+          <p>Physics-based slingshot game recreated with a Matter.js physics engine.</p>
+          <div class="card-foot">
+            <div class="tags"><span class="tag">JavaScript</span><span class="tag">Matter.js</span><span class="tag clone">Clone</span></div>
+          </div>
+        </article>
+        <article class="card project">
+          <div class="kind">Game · Clone</div>
+          <h3>T-Rex Runner</h3>
+          <p>Recreation of the Chrome dinosaur endless runner, with obstacles, scoring and restart.</p>
+          <div class="card-foot">
+            <div class="tags"><span class="tag">JavaScript</span><span class="tag">p5.play</span><span class="tag clone">Clone</span></div>
+          </div>
+        </article>
+      </div>
+      <p class="all-link"><a href="https://github.com/soham2121?tab=repositories" target="_blank" rel="noopener">View all on GitHub ↗</a></p>
+    </div>
+  </section>
+
+  <section id="experience" class="wrap">
+    <div class="reveal">
+      <div class="label">03 / Experience</div>
+      <h2>Where I've worked</h2>
+    </div>
+    <article class="card job reveal">
+      <div class="job-head">
+        <div>
+          <h3>Software Development Intern</h3>
+          <div class="muted">Sypha.AI · AI-powered coding assistant</div>
+        </div>
+        <div class="date">Sep 2025 – Feb 2026</div>
+      </div>
+      <ul class="bullets">
+        <li><b>Payments:</b> integrated Razorpay and built the backend workflows for subscription management and transaction verification.</li>
+        <li><b>Prompt analysis:</b> designed a module that evaluates and refines user prompts to improve the accuracy and relevance of AI-generated code.</li>
+        <li><b>Adoption analytics:</b> built a system that measures how much generated code users keep as-is versus modify.</li>
+        <li><b>Backend:</b> developed Python and Flask REST APIs and structured data pipelines for the platform.</li>
+        <li><b>Team:</b> shipped in an agile team using Git-based version control.</li>
+      </ul>
+      <div class="tags">
+        <span class="tag">Python</span><span class="tag">Flask</span><span class="tag">REST APIs</span>
+        <span class="tag">Razorpay</span><span class="tag">Prompt Engineering</span><span class="tag">Analytics</span>
+      </div>
+    </article>
+
+    <h3 class="sub-head reveal">Freelance &amp; independent work</h3>
+    <div class="grid stagger">
+      <article class="card project">
+        <div class="kind">Client project · Web app</div>
+        <h3>Imperio Selective Systems</h3>
+        <p>Window configurator and quoting platform for a window manufacturer. Homeowners, architects and builders design windows (size, frame colour, glass, mesh), upload bulk project files and get proforma quotes behind phone verification.</p>
+        <div class="card-foot">
+          <div class="tags"><span class="tag">Configurator</span><span class="tag">File Uploads</span><span class="tag">SMS Verification</span></div>
+          <a class="card-link" href="https://selective-window-config.vercel.app/" target="_blank" rel="noopener">Live site ↗</a>
+        </div>
+      </article>
+      <article class="card project">
+        <div class="kind"><span class="pill live">In progress</span></div>
+        <h3>Kala Vyasanga</h3>
+        <p>Curated marketplace for artisans, connecting handmade craft with buyers who value it.</p>
+        <div class="card-foot">
+          <div class="tags"><span class="tag">Marketplace</span><span class="tag">E-commerce</span></div>
+        </div>
+      </article>
     </div>
   </section>
 
   <section id="stack" class="wrap">
-    <div class="label">04 / Stack</div>
-    <h2>Tools I work with</h2>
-    <div class="card">
-      <div class="stack-row"><h3>Languages</h3><div class="tags">
-        <span class="tag">Python</span><span class="tag">C++</span><span class="tag">C#</span><span class="tag">Java</span><span class="tag">JavaScript</span><span class="tag">SQL</span><span class="tag">HTML</span><span class="tag">CSS</span>
+    <div class="reveal">
+      <div class="label">04 / Stack</div>
+      <h2>Tools I've worked with</h2>
+    </div>
+    <div class="card reveal">
+      <div class="stack-row"><h3>AI / ML</h3><div class="tags">
+        <span class="tag">Python</span><span class="tag">PyTorch</span><span class="tag">scikit-learn</span><span class="tag">NumPy</span><span class="tag">Pandas</span><span class="tag">Jupyter</span><span class="tag">PySpark</span>
       </div></div>
-      <div class="stack-row"><h3>Frameworks</h3><div class="tags">
-        <span class="tag">Flask</span><span class="tag">React Native</span><span class="tag">Spring Boot</span>
+      <div class="stack-row"><h3>Languages</h3><div class="tags">
+        <span class="tag">Python</span><span class="tag">Java</span><span class="tag">C++</span><span class="tag">C#</span><span class="tag">JavaScript</span><span class="tag">TypeScript</span><span class="tag">SQL</span>
+      </div></div>
+      <div class="stack-row"><h3>Web / Backend</h3><div class="tags">
+        <span class="tag">Flask</span><span class="tag">Spring Boot</span><span class="tag">REST APIs</span><span class="tag">React Native</span><span class="tag">Expo</span><span class="tag">HTML / CSS</span>
       </div></div>
       <div class="stack-row"><h3>Data</h3><div class="tags">
-        <span class="tag">MySQL</span>
+        <span class="tag">MySQL</span><span class="tag">PostgreSQL</span><span class="tag">SQLite</span><span class="tag">Supabase</span><span class="tag">Firebase</span><span class="tag">Power BI</span>
       </div></div>
-      <div class="stack-row"><h3>Game &amp; 3D</h3><div class="tags">
-        <span class="tag">Unity</span><span class="tag">Blender</span>
+      <div class="stack-row"><h3>Game Development</h3><div class="tags">
+        <span class="tag">Unity</span><span class="tag">C#</span><span class="tag">Blender</span><span class="tag">p5.js</span><span class="tag">Matter.js</span>
       </div></div>
-      <div class="stack-row"><h3>Hardware</h3><div class="tags">
-        <span class="tag">Arduino</span><span class="tag">Drones</span>
+      <div class="stack-row"><h3>Cloud / DevOps</h3><div class="tags">
+        <span class="tag">Git</span><span class="tag">GitHub</span><span class="tag">GitHub Actions</span><span class="tag">Docker</span><span class="tag">Vercel</span>
       </div></div>
-      <div class="stack-row"><h3>Tooling</h3><div class="tags">
-        <span class="tag">Git</span><span class="tag">GitHub</span><span class="tag">VS Code</span>
-      </div></div>
-      <div class="stack-row"><h3>Concepts</h3><div class="tags">
-        <span class="tag alt">AI / ML</span><span class="tag alt">Data Structures</span><span class="tag alt">Algorithms</span><span class="tag alt">OOP</span><span class="tag alt">Backend Development</span><span class="tag alt">API Integration</span>
+      <div class="stack-row"><h3>Hardware / Robotics</h3><div class="tags">
+        <span class="tag">Arduino</span><span class="tag">Sensors</span><span class="tag">Drones</span>
       </div></div>
     </div>
   </section>
 
   <section id="leadership" class="wrap">
-    <div class="label">05 / Leadership</div>
-    <h2>Positions of responsibility</h2>
-    <div class="grid">
-      <div class="card">
-        <h3>Hardware &amp; Software Head</h3>
-        <p>International Space Drone Championship, BITS Goa (Feb 2025).</p>
-      </div>
-      <div class="card">
+    <div class="reveal">
+      <div class="label">05 / Leadership</div>
+      <h2>Positions of responsibility</h2>
+    </div>
+    <article class="card feature reveal">
+      <div class="date">International Space Drone Championship · BITS Goa · Feb 2025</div>
+      <h3 style="margin-top:8px">Hardware &amp; Software Head</h3>
+      <p>Headed both hardware and software for the team at an international drone competition.</p>
+      <div class="tags"><span class="tag">Drones</span><span class="tag">Hardware</span><span class="tag">Software</span></div>
+    </article>
+    <div class="grid stagger">
+      <article class="card">
         <h3>Head of Esports</h3>
         <p>SPARC Society, Atlas Skilltech University.</p>
-      </div>
-      <div class="card">
-        <h3>Team Leader, Beach Clean-up Drive</h3>
-        <p>Led the environmental initiative for 1 year after 3 years of participation.</p>
-      </div>
-      <div class="card">
+      </article>
+      <article class="card">
         <h3>Coding Mentor</h3>
         <p>Guided students in Python, Unity development and programming fundamentals.</p>
-      </div>
+      </article>
+      <article class="card">
+        <h3>Team Leader, Beach Clean-up Drive</h3>
+        <p>Led the environmental initiative for 1 year after 3 years of participation.</p>
+      </article>
     </div>
   </section>
 
   <section id="honors" class="wrap">
-    <div class="label">06 / Honors</div>
-    <h2>Achievements</h2>
-    <div class="card">
+    <div class="reveal">
+      <div class="label">06 / Honors</div>
+      <h2>Achievements</h2>
+    </div>
+    <div class="card reveal">
       <ul class="list">
+        <li><span>Shortlisted — Smart India Hackathon</span><span>2024</span></li>
         <li><span>1st Place, Game Design — Design Championship India</span><span>2019</span></li>
         <li><span>3rd Place, Game Design — Design Championship India</span><span>2018</span></li>
         <li><span>5th Place Nationally — FIRST LEGO League Robotics</span><span>National</span></li>
-        <li><span>Shortlisted — Smart India Hackathon</span><span>2024</span></li>
-        <li><span>Subject Topper — ICT (10th) and Computer Science (12th)</span><span>School</span></li>
-        <li><span>3rd Place — Interstate Football</span><span>Sports</span></li>
-        <li><span>State Level Champion — Volleyball</span><span>Sports</span></li>
       </ul>
     </div>
+    <p class="earlier reveal"><b>Earlier &amp; sports</b>Subject Topper, ICT (10th) &amp; Computer Science (12th) · 3rd Place, Interstate Football · State Level Champion, Volleyball</p>
   </section>
 
   <section id="education" class="wrap">
-    <div class="label">07 / Education</div>
-    <h2>Education &amp; credentials</h2>
-    <div class="grid">
-      <div class="card">
+    <div class="reveal">
+      <div class="label">07 / Education</div>
+      <h2>Education &amp; credentials</h2>
+    </div>
+    <div class="grid stagger">
+      <article class="card">
         <div class="date">Jul 2024 – Jun 2028</div>
         <h3>Atlas Skilltech University</h3>
         <p>B.Tech, Artificial Intelligence &amp; Machine Learning</p>
-      </div>
-      <div class="card">
+      </article>
+      <article class="card">
         <div class="date">Aug 2022 – Feb 2024</div>
         <h3>Aditya Birla World Academy</h3>
         <p>AS / A Levels</p>
-      </div>
-      <div class="card">
+      </article>
+      <article class="card">
         <div class="kind">Certifications · Udemy</div>
         <ul class="bullets" style="margin-top:10px">
           <li>Unity 3D Game Development</li>
@@ -351,23 +624,54 @@
           <li>Game Physics in Unity</li>
           <li>Blender 3D Modelling</li>
         </ul>
-      </div>
+      </article>
     </div>
   </section>
 
   <section id="contact" class="wrap contact">
-    <div class="label">08 / Contact</div>
-    <h2>Let's build something</h2>
-    <p class="muted">I'm looking for internships in AI, Machine Learning and Software Development. Based in Mumbai, India.</p>
-    <div class="cta">
-      <a class="btn" href="mailto:sohamdesai67@gmail.com">sohamdesai67@gmail.com</a>
-      <a class="btn ghost" href="https://www.linkedin.com/in/soham-desai-/" target="_blank" rel="noopener">LinkedIn</a>
-      <a class="btn ghost" href="https://github.com/soham2121" target="_blank" rel="noopener">GitHub</a>
+    <div class="reveal">
+      <div class="label">08 / Contact</div>
+      <div class="status">Open to Work</div>
+      <h2>Let's build something together</h2>
+      <p class="lead">Have a project, opportunity or idea? I'd love to hear from you, whether it's a role, an internship, freelance work or a collaboration.</p>
+      <a class="btn big" href="mailto:sohamdesai67@gmail.com">Contact Me →</a>
+    </div>
+    <div class="contact-links stagger">
+      <a class="card" href="mailto:sohamdesai67@gmail.com"><small>Email</small><span>sohamdesai67@gmail.com</span></a>
+      <a class="card" href="https://www.linkedin.com/in/soham-desai-/" target="_blank" rel="noopener"><small>LinkedIn</small><span>in/soham-desai-</span></a>
+      <a class="card" href="https://github.com/soham2121" target="_blank" rel="noopener"><small>GitHub</small><span>github.com/soham2121</span></a>
     </div>
   </section>
 </main>
 
 <footer>© 2026 Soham Desai · Mumbai, India</footer>
 
+<script>
+  // Scroll reveal: stagger children of .stagger, reveal each element once.
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }, { rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.stagger').forEach((group) =>
+    [...group.children].forEach((el, i) => { el.style.setProperty('--i', Math.min(i, 5)); el.classList.add('reveal'); }));
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+  // More Projects toggle: re-arm the reveal each time it opens.
+  const toggle = document.getElementById('more-toggle');
+  const more = document.getElementById('more-projects');
+  toggle.addEventListener('click', () => {
+    const open = more.hidden;
+    more.hidden = !open;
+    toggle.setAttribute('aria-expanded', open);
+    toggle.textContent = open ? 'Show less ↑' : 'More Projects →';
+    if (open) more.querySelectorAll('.reveal').forEach((el) => { el.classList.remove('in'); io.observe(el); });
+  });
+
+  // Highlight the nav link for the section in the middle of the viewport.
+  const links = new Map([...document.querySelectorAll('.links a')].map((a) => [a.hash.slice(1), a]));
+  const spy = new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) links.forEach((a, id) => a.classList.toggle('active', id === e.target.id));
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  document.querySelectorAll('main section[id]').forEach((s) => spy.observe(s));
+</script>
 </body>
 </html>

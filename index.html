@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soham Desai — AI/ML & Game Developer</title>
+<meta name="description" content="Portfolio of Soham Desai, B.Tech AI & ML student building AI systems, backend services, IoT prototypes and Unity games.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0e14;
+    --surface: #121722;
+    --border: #1f2735;
+    --text: #e6e9ef;
+    --muted: #8b95a7;
+    --accent: #4fd1c5;
+    --accent-2: #7c9cff;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 "Space Grotesk", system-ui, sans-serif;
+    background-image: radial-gradient(circle at 1px 1px, #1a2130 1px, transparent 0);
+    background-size: 28px 28px;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(11, 14, 20, .85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav { display: flex; align-items: center; gap: 24px; height: 60px; }
+  .logo { font-family: var(--mono); font-weight: 600; color: var(--text); }
+  .logo span { color: var(--accent); }
+  .links { display: flex; gap: 20px; margin-left: auto; font-size: 14px; }
+  .links a { color: var(--muted); }
+  .links a:hover { color: var(--text); text-decoration: none; }
+  .btn {
+    display: inline-block; padding: 10px 18px; border-radius: 8px;
+    background: var(--accent); color: #06201d; font-weight: 700; font-size: 14px;
+  }
+  .btn:hover { text-decoration: none; filter: brightness(1.1); }
+  .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  @media (max-width: 760px) { .links { display: none; } nav .btn { margin-left: auto; } }
+
+  section { padding: 72px 0; }
+  .label {
+    font-family: var(--mono); font-size: 13px; color: var(--accent);
+    letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  h2 { font-size: clamp(26px, 4vw, 34px); margin-bottom: 32px; }
+  h3 { font-size: 19px; }
+  .muted { color: var(--muted); }
+
+  .hero { padding: 96px 0 72px; }
+  .status {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 13px; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; margin-bottom: 24px;
+  }
+  .status::before {
+    content: ""; width: 8px; height: 8px; border-radius: 50%;
+    background: #3ddc84; box-shadow: 0 0 8px #3ddc84;
+  }
+  .hero h1 { font-size: clamp(40px, 8vw, 72px); line-height: 1.05; letter-spacing: -.02em; }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p.lead { font-size: 19px; color: var(--muted); max-width: 640px; margin: 20px 0 32px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px; margin-top: 56px;
+  }
+  .stat { border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 18px; }
+  .stat b { display: block; font-size: 28px; }
+  .stat span { font-size: 13px; color: var(--muted); }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; transition: border-color .2s, transform .2s;
+  }
+  .card:hover { border-color: #2e3a4f; transform: translateY(-2px); }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
+
+  .job-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .date { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  ul.bullets { padding-left: 18px; color: #c5cbd6; }
+  ul.bullets li { margin: 6px 0; }
+  ul.bullets li::marker { color: var(--accent); }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+  .tag {
+    font-family: var(--mono); font-size: 12px; padding: 3px 10px; border-radius: 6px;
+    background: rgba(79, 209, 197, .1); color: var(--accent); border: 1px solid rgba(79, 209, 197, .25);
+  }
+  .tag.alt { background: rgba(124, 156, 255, .1); color: var(--accent-2); border-color: rgba(124, 156, 255, .25); }
+  .card p { color: #c5cbd6; margin-top: 8px; }
+  .kind { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+  .mini { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+  .mini .tag { font-size: 13px; padding: 6px 12px; }
+
+  .stack-row { display: grid; grid-template-columns: 200px 1fr; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--border); }
+  .stack-row:last-child { border-bottom: 0; }
+  .stack-row h3 { font-size: 15px; font-family: var(--mono); color: var(--muted); font-weight: 400; }
+  .stack-row .tags { margin-top: 0; }
+  @media (max-width: 600px) { .stack-row { grid-template-columns: 1fr; gap: 8px; } }
+
+  .list { list-style: none; }
+  .list li { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .list li:last-child { border-bottom: 0; }
+  .list li span:last-child { font-family: var(--mono); font-size: 13px; color: var(--muted); white-space: nowrap; }
+
+  .contact { text-align: center; }
+  .contact p { max-width: 520px; margin: 0 auto 28px; }
+  .contact .cta { justify-content: center; }
+  footer { border-top: 1px solid var(--border); padding: 24px 0; font-size: 13px; color: var(--muted); text-align: center; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .card { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <a class="logo" href="#top">soham<span>.dev</span></a>
+    <div class="links">
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#stack">Stack</a>
+      <a href="#leadership">Leadership</a>
+      <a href="#honors">Honors</a>
+      <a href="#education">Education</a>
+    </div>
+    <a class="btn" href="#contact">Get in Touch</a>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero wrap">
+    <div class="status">Open to AI / ML &amp; software internships</div>
+    <h1>Hi, I'm Soham Desai.<br><em>I build AI systems &amp; games.</em></h1>
+    <p class="lead">B.Tech AI &amp; ML student at Atlas Skilltech University, Mumbai. I work across machine learning, backend development, mobile apps, IoT prototypes and Unity games.</p>
+    <div class="cta">
+      <a class="btn" href="#projects">View Projects</a>
+      <a class="btn ghost" href="https://github.com/soham2121" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn ghost" href="https://www.linkedin.com/in/soham-desai-/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>1</b><span>AI startup internship</span></div>
+      <div class="stat"><b>9+</b><span>Projects shipped</span></div>
+      <div class="stat"><b>SIH '24</b><span>Hackathon shortlist</span></div>
+      <div class="stat"><b>1st</b><span>National game design</span></div>
+    </div>
+  </section>
+
+  <section id="experience" class="wrap">
+    <div class="label">01 / Experience</div>
+    <h2>Where I've worked</h2>
+    <div class="card">
+      <div class="job-head">
+        <div>
+          <h3>Software Development Intern</h3>
+          <div class="muted">Sypha.AI — AI-powered coding assistant</div>
+        </div>
+        <div class="date">Sep 2025 – Feb 2026</div>
+      </div>
+      <ul class="bullets">
+        <li>Contributed to an AI coding assistant platform built to improve developer productivity.</li>
+        <li>Integrated the Razorpay payment gateway, with backend workflows for subscription management and transaction verification.</li>
+        <li>Designed a prompt analysis module that evaluates and refines user prompts to improve the accuracy of AI-generated code.</li>
+        <li>Built an AI code adoption analytics system measuring how much generated code is used directly versus modified.</li>
+        <li>Built backend services in Python and Flask using REST APIs and structured data pipelines.</li>
+        <li>Worked in an agile team with Git-based version control.</li>
+      </ul>
+      <div class="tags">
+        <span class="tag">Python</span><span class="tag">Flask</span><span class="tag">REST APIs</span>
+        <span class="tag">Razorpay</span><span class="tag">Prompt Engineering</span><span class="tag">Analytics</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" class="wrap">
+    <div class="label">02 / Projects</div>
+    <h2>Things I've built</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="kind">AI / ML</div>
+        <h3>Protein Structure Prediction</h3>
+        <p>Machine learning model that analyses protein sequence data and predicts structural patterns using computational techniques.</p>
+        <div class="tags"><span class="tag">Python</span><span class="tag">Machine Learning</span><span class="tag">Bioinformatics</span></div>
+      </div>
+      <div class="card">
+        <div class="kind">Full-stack / Mobile</div>
+        <h3>MedVault</h3>
+        <p>Secure, centralized medical records platform. Patients and doctors access and manage health data with QR authentication, reducing manual errors.</p>
+        <div class="tags"><span class="tag">Spring Boot</span><span class="tag">React Native</span><span class="tag">QR Auth</span></div>
+      </div>
+      <div class="card">
+        <div class="kind">Game Dev</div>
+        <h3>Glitch Runner</h3>
+        <p>Puzzle-platformer where intentionally coded glitches are the core mechanic. Players exploit them to solve levels.</p>
+        <div class="tags"><span class="tag">Unity</span><span class="tag">C#</span><span class="tag">Game Design</span></div>
+      </div>
+      <div class="card">
+        <div class="kind">IoT</div>
+        <h3>Smart Home Automation</h3>
+        <p>IoT prototype that automates household devices using sensors and microcontroller-based control.</p>
+        <div class="tags"><span class="tag">Arduino</span><span class="tag">Sensors</span><span class="tag">C++</span></div>
+      </div>
+    </div>
+    <div class="mini">
+      <span class="muted">Also built:</span>
+      <span class="tag alt">Royal Run · Unity</span>
+      <span class="tag alt">Zombie Shooter · Unity</span>
+      <span class="tag alt">Rocket Boost · Unity 2.5D</span>
+      <span class="tag alt">Defusal · Unity</span>
+      <span class="tag alt">Robotic Parking System · Arduino</span>
+    </div>
+  </section>
+
+  <section id="stack" class="wrap">
+    <div class="label">03 / Stack</div>
+    <h2>Tools I work with</h2>
+    <div class="card">
+      <div class="stack-row"><h3>Languages</h3><div class="tags">
+        <span class="tag">Python</span><span class="tag">C++</span><span class="tag">C#</span><span class="tag">Java</span><span class="tag">JavaScript</span><span class="tag">SQL</span><span class="tag">HTML</span><span class="tag">CSS</span>
+      </div></div>
+      <div class="stack-row"><h3>Frameworks</h3><div class="tags">
+        <span class="tag">Flask</span><span class="tag">React Native</span><span class="tag">Spring Boot</span>
+      </div></div>
+      <div class="stack-row"><h3>Data</h3><div class="tags">
+        <span class="tag">MySQL</span>
+      </div></div>
+      <div class="stack-row"><h3>Game &amp; 3D</h3><div class="tags">
+        <span class="tag">Unity</span><span class="tag">Blender</span>
+      </div></div>
+      <div class="stack-row"><h3>Hardware</h3><div class="tags">
+        <span class="tag">Arduino</span><span class="tag">Drones</span>
+      </div></div>
+      <div class="stack-row"><h3>Tooling</h3><div class="tags">
+        <span class="tag">Git</span><span class="tag">GitHub</span><span class="tag">VS Code</span>
+      </div></div>
+      <div class="stack-row"><h3>Concepts</h3><div class="tags">
+        <span class="tag alt">AI / ML</span><span class="tag alt">Data Structures</span><span class="tag alt">Algorithms</span><span class="tag alt">OOP</span><span class="tag alt">Backend Development</span><span class="tag alt">API Integration</span>
+      </div></div>
+    </div>
+  </section>
+
+  <section id="leadership" class="wrap">
+    <div class="label">04 / Leadership</div>
+    <h2>Positions of responsibility</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Hardware &amp; Software Head</h3>
+        <p>International Space Drone Championship, BITS Goa (Feb 2025).</p>
+      </div>
+      <div class="card">
+        <h3>Head of Esports</h3>
+        <p>SPARC Society, Atlas Skilltech University.</p>
+      </div>
+      <div class="card">
+        <h3>Team Leader, Beach Clean-up Drive</h3>
+        <p>Led the environmental initiative for 1 year after 3 years of participation.</p>
+      </div>
+      <div class="card">
+        <h3>Coding Mentor</h3>
+        <p>Guided students in Python, Unity development and programming fundamentals.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="honors" class="wrap">
+    <div class="label">05 / Honors</div>
+    <h2>Achievements</h2>
+    <div class="card">
+      <ul class="list">
+        <li><span>1st Place, Game Design — Design Championship India</span><span>2019</span></li>
+        <li><span>3rd Place, Game Design — Design Championship India</span><span>2018</span></li>
+        <li><span>5th Place Nationally — FIRST LEGO League Robotics</span><span>National</span></li>
+        <li><span>Shortlisted — Smart India Hackathon</span><span>2024</span></li>
+        <li><span>Subject Topper — ICT (10th) and Computer Science (12th)</span><span>School</span></li>
+        <li><span>3rd Place — Interstate Football</span><span>Sports</span></li>
+        <li><span>State Level Champion — Volleyball</span><span>Sports</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="education" class="wrap">
+    <div class="label">06 / Education</div>
+    <h2>Education &amp; credentials</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="date">Jul 2024 – Jun 2028</div>
+        <h3>Atlas Skilltech University</h3>
+        <p>B.Tech, Artificial Intelligence &amp; Machine Learning</p>
+      </div>
+      <div class="card">
+        <div class="date">Aug 2022 – Feb 2024</div>
+        <h3>Aditya Birla World Academy</h3>
+        <p>AS / A Levels</p>
+      </div>
+      <div class="card">
+        <div class="kind">Certifications · Udemy</div>
+        <ul class="bullets" style="margin-top:10px">
+          <li>Unity 3D Game Development</li>
+          <li>Unity 2D Game Development</li>
+          <li>Game Physics in Unity</li>
+          <li>Blender 3D Modelling</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="wrap contact">
+    <div class="label">07 / Contact</div>
+    <h2>Let's build something</h2>
+    <p class="muted">I'm looking for internships in AI, Machine Learning and Software Development. Based in Mumbai, India.</p>
+    <div class="cta">
+      <a class="btn" href="mailto:sohamdesai67@gmail.com">sohamdesai67@gmail.com</a>
+      <a class="btn ghost" href="https://www.linkedin.com/in/soham-desai-/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn ghost" href="https://github.com/soham2121" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </section>
+</main>
+
+<footer>© 2026 Soham Desai · Mumbai, India</footer>
+
+</body>
+</html>

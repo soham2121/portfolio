@@ -44,6 +44,17 @@
     background-size: 28px 28px;
     overflow-x: clip;
   }
+  /* Animated background: aurora behind the hero, dot field over the whole page.
+     The static CSS dots above stay as the no-JS fallback. */
+  .js body { background-image: none; }
+  .bg-aurora {
+    position: absolute; top: 0; left: 0; right: 0; height: min(100vh, 920px);
+    overflow: hidden; pointer-events: none; z-index: -2;
+    -webkit-mask-image: linear-gradient(#000 50%, transparent); mask-image: linear-gradient(#000 50%, transparent);
+  }
+  .bg-aurora canvas { position: absolute; left: 0; bottom: 0; width: 100%; height: 150%; display: block; }
+  .bg-dots { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
@@ -269,6 +280,8 @@
 </style>
 </head>
 <body>
+<div class="bg-aurora" aria-hidden="true"><canvas></canvas></div>
+<canvas class="bg-dots" aria-hidden="true"></canvas>
 
 <header>
   <nav class="wrap" aria-label="Main">
@@ -696,6 +709,214 @@
     for (const e of entries) if (e.isIntersecting) links.forEach((a, id) => a.classList.toggle('active', id === e.target.id));
   }, { rootMargin: '-45% 0px -50% 0px' });
   document.querySelectorAll('main section[id]').forEach((s) => spy.observe(s));
+</script>
+<script>
+  /* Background ported from React Bits (https://reactbits.dev): DotField and the landing-page
+     ColorBends band, "Aurora" preset. Copyright (c) 2026 David Haz, MIT + Commons Clause License. */
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Aurora: WebGL shader band, rendered only while the hero area is on screen.
+  (() => {
+    const wrap = document.querySelector('.bg-aurora');
+    const canvas = wrap.querySelector('canvas');
+    const gl = canvas.getContext('webgl', { alpha: true, antialias: false });
+    if (!gl) return;
+
+    const frag = `
+      precision mediump float;
+      uniform vec2 uCanvas, uPointer, uRot;
+      uniform vec3 uColor;
+      uniform float uTime, uSpeed, uScale, uFrequency, uWarpStrength, uNoise, uBandWidth,
+                    uYOffset, uFadeTop, uMouseInfluence, uIntensity;
+      uniform int uIterations;
+      varying vec2 vUv;
+      void main() {
+        float t = uTime * uSpeed;
+        vec2 uv = vUv;
+        uv.y += uYOffset;
+        vec2 p = uv * 2.0 - 1.0;
+        vec2 rp = vec2(p.x * uRot.x - p.y * uRot.y, p.x * uRot.y + p.y * uRot.x);
+        vec2 q = vec2(rp.x * uCanvas.x / uCanvas.y, rp.y) / max(uScale, 0.0001);
+        q /= 0.5 + 0.2 * dot(q, q);
+        q += (uPointer - rp) * uMouseInfluence * 0.2;
+        q += 0.2 * cos(t) - 7.56;
+        for (int i = 0; i < 5; i++) {
+          if (i >= uIterations) break;
+          vec2 r = sin(1.5 * (q.yx * uFrequency) + 2.0 * cos(q * uFrequency));
+          q = q + (r - q) * uWarpStrength;
+        }
+        float m = length(q + sin(5.0 * q.y * uFrequency - 3.0 * t) * 0.25);
+        float w = 1.0 - exp(-6.0 / exp(6.0 * m));
+        w = pow(clamp(w, 0.0, 1.0), uBandWidth);
+        w *= smoothstep(uFadeTop, 0.0, vUv.y);
+        w *= uIntensity;
+        float grain = fract(sin(dot(gl_FragCoord.xy + vec2(uTime), vec2(12.9898, 78.233))) * 43758.5453) - 0.5;
+        vec3 col = clamp(uColor * w + grain * uNoise, 0.0, 1.0) * w;
+        gl_FragColor = vec4(col, w);
+      }`;
+    const vert = `
+      attribute vec2 position;
+      varying vec2 vUv;
+      void main() { vUv = position * 0.5 + 0.5; gl_Position = vec4(position, 0.0, 1.0); }`;
+
+    const prog = gl.createProgram();
+    for (const [type, src] of [[gl.VERTEX_SHADER, vert], [gl.FRAGMENT_SHADER, frag]]) {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      gl.attachShader(prog, s);
+    }
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+    gl.useProgram(prog);
+
+    // One triangle that covers the whole viewport.
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const pos = gl.getAttribLocation(prog, 'position');
+    gl.enableVertexAttribArray(pos);
+    gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+
+    const u = (name) => gl.getUniformLocation(prog, name);
+    const settings = {
+      uSpeed: 0.3, uScale: 1, uFrequency: 1.5, uWarpStrength: 1, uNoise: 0.08, uBandWidth: 0.3,
+      uYOffset: 0.3, uFadeTop: 0.8, uMouseInfluence: 0.3, uIntensity: 1.1,
+    };
+    for (const [name, v] of Object.entries(settings)) gl.uniform1f(u(name), v);
+    gl.uniform1i(u('uIterations'), 2);
+    gl.uniform3f(u('uColor'), 0x10 / 255, 0xb9 / 255, 0x81 / 255); // #10B981
+    const rot = (60 * Math.PI) / 180;
+    gl.uniform2f(u('uRot'), Math.cos(rot), Math.sin(rot));
+    const uTime = u('uTime'), uPointer = u('uPointer'), uCanvas = u('uCanvas');
+
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
+    let elapsed = 0, last = 0, raf = 0, running = false;
+
+    const draw = () => {
+      gl.uniform1f(uTime, elapsed);
+      gl.uniform2f(uPointer, pointer.x, pointer.y);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    };
+    const frame = (now) => {
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      elapsed += dt;
+      const k = Math.min(1, dt * 4);
+      pointer.x += (pointer.tx - pointer.x) * k;
+      pointer.y += (pointer.ty - pointer.y) * k;
+      draw();
+      if (running) raf = requestAnimationFrame(frame);
+    };
+
+    new ResizeObserver(() => {
+      canvas.width = canvas.clientWidth || 1;
+      canvas.height = canvas.clientHeight || 1;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniform2f(uCanvas, canvas.width, canvas.height);
+      draw(); // resizing clears the canvas
+    }).observe(canvas);
+
+    if (reduceMotion) return;
+    addEventListener('mousemove', (e) => {
+      const r = canvas.getBoundingClientRect();
+      pointer.tx = ((e.clientX - r.left) / r.width) * 2 - 1;
+      pointer.ty = -(((e.clientY - r.top) / r.height) * 2 - 1);
+    }, { passive: true });
+    new IntersectionObserver(([e]) => {
+      running = e.isIntersecting;
+      cancelAnimationFrame(raf);
+      if (running) { last = performance.now(); raf = requestAnimationFrame(frame); }
+    }).observe(wrap);
+  })();
+
+  // Dot field: dots bulge away from a moving cursor and fade around it, with a gentle wave.
+  (() => {
+    const canvas = document.querySelector('.bg-dots');
+    const ctx = canvas.getContext('2d');
+    const dotRadius = 1.5, dotSpacing = 14, cursorRadius = 620, bulgeStrength = 45, glowRadius = 280;
+    const wave = reduceMotion ? 0 : 5;
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const mouse = { x: -9999, y: -9999, px: -9999, py: -9999, speed: 0 };
+    let w = 0, h = 0, dots = [], fill, engagement = 0, glow = 0, frameCount = 0, resizeTimer;
+
+    function resize() {
+      w = canvas.clientWidth;
+      h = canvas.clientHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      fill = ctx.createLinearGradient(0, 0, w, h);
+      fill.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+      fill.addColorStop(1, 'rgba(28, 251, 145, 0.25)');
+      const step = dotRadius + dotSpacing;
+      const cols = Math.floor(w / step), rows = Math.floor(h / step);
+      const padX = (w % step) / 2, padY = (h % step) / 2;
+      dots = [];
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+        const ax = padX + c * step + step / 2, ay = padY + r * step + step / 2;
+        dots.push({ ax, ay, sx: ax, sy: ay });
+      }
+      if (reduceMotion) draw();
+    }
+
+    // ponytail: redraws every dot each frame (~5k on a laptop screen); fine for 2D canvas, move to WebGL if it ever stutters.
+    function draw() {
+      frameCount++;
+      const t = frameCount * 0.02;
+      engagement += (Math.min(mouse.speed / 5, 1) - engagement) * 0.06;
+      if (engagement < 0.001) engagement = 0;
+      glow += (engagement - glow) * 0.08;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = fill;
+      ctx.beginPath();
+      const crSq = cursorRadius * cursorRadius, rad = dotRadius / 2;
+      for (const d of dots) {
+        const dx = mouse.x - d.ax, dy = mouse.y - d.ay, distSq = dx * dx + dy * dy;
+        if (distSq < crSq && engagement > 0.01) {
+          const k = 1 - Math.sqrt(distSq) / cursorRadius;
+          const push = k * k * bulgeStrength * engagement, angle = Math.atan2(dy, dx);
+          d.sx += (d.ax - Math.cos(angle) * push - d.sx) * 0.15;
+          d.sy += (d.ay - Math.sin(angle) * push - d.sy) * 0.15;
+        } else {
+          d.sx += (d.ax - d.sx) * 0.1;
+          d.sy += (d.ay - d.sy) * 0.1;
+        }
+        const x = d.sx + Math.cos(d.ay * 0.03 + t * 0.7) * wave * 0.5;
+        const y = d.sy + Math.sin(d.ax * 0.03 + t) * wave;
+        ctx.moveTo(x + rad, y);
+        ctx.arc(x, y, rad, 0, Math.PI * 2);
+      }
+      ctx.fill();
+
+      // Fade the dots out around a moving cursor (erases dots only, so the aurora shows through).
+      if (glow > 0.005) {
+        const g = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, glowRadius);
+        g.addColorStop(0, 'rgba(0, 0, 0, 1)');
+        g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.globalAlpha = glow;
+        ctx.fillStyle = g;
+        ctx.fillRect(mouse.x - glowRadius, mouse.y - glowRadius, glowRadius * 2, glowRadius * 2);
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
+      }
+    }
+
+    resize();
+    addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(resize, 100); });
+    if (reduceMotion) return;
+    addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+    setInterval(() => {
+      const dist = Math.hypot(mouse.px - mouse.x, mouse.py - mouse.y);
+      mouse.speed += (dist - mouse.speed) * 0.5;
+      if (mouse.speed < 0.001) mouse.speed = 0;
+      mouse.px = mouse.x;
+      mouse.py = mouse.y;
+    }, 20);
+    const tick = () => { draw(); requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  })();
 </script>
 </body>
 </html>

@@ -148,6 +148,10 @@
   .hero > :nth-child(4) { animation-delay: .24s; }
   .hero > :nth-child(5) { animation-delay: .32s; }
   @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+  /* React Bits BlurText: JS wraps each headline word in .word */
+  .js .hero h1 { animation: none; }
+  .hero h1 .word { display: inline-block; animation: blur-in .9s var(--ease) both; animation-delay: calc(var(--w) * 70ms + .1s); }
+  @keyframes blur-in { from { opacity: 0; filter: blur(10px); transform: translateY(20px); } 60% { filter: blur(2px); } }
 
   /* ---------- toolbox marquee (React Bits ScrollVelocity + LogoLoop) ---------- */
   .toolbox { padding: 40px 0 64px; display: flex; flex-direction: column; gap: 22px; border-block: 1px solid #141a26; }
@@ -192,8 +196,9 @@
   .about { display: flex; flex-wrap: wrap; gap: 64px; align-items: center; }
   .about-text { flex: 999 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 26px; }
   .statement { font-size: clamp(28px, 3.4vw, 44px); line-height: 1.2; letter-spacing: -0.02em; font-weight: 500; }
-  .statement .w { color: var(--dim); transition: color .35s; }
-  .statement .w.lit { color: var(--text); }
+  /* React Bits ScrollReveal: JS splits .sr text into words and scrubs their opacity, blur and the line's tilt */
+  .sr { transform-origin: 0% 50%; }
+  .sr .w { display: inline-block; }
   .about-text p.body { font-size: 17px; line-height: 1.7; color: var(--body); max-width: 620px; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .facts { flex: 1 1 320px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
@@ -331,6 +336,29 @@
   }
   footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-block: 28px; border-top: 1px solid #141a26; color: var(--muted); font: 400 13px/1 var(--mono); }
 
+  /* React Bits DodgeField: the "Delete this portfolio" button runs away */
+  .dodge-zone { margin-top: 72px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+  .dodge-zone > p { color: var(--muted); font-size: 15px; }
+  .dodge-field { position: relative; width: min(100%, 620px); height: 220px; display: grid; place-items: center; border: 1px dashed var(--border-hi); border-radius: 28px; }
+  .dodger { position: relative; transition: transform .14s var(--ease); }
+  .dodge {
+    min-height: 44px; padding: 14px 22px; border-radius: 999px; cursor: pointer; touch-action: manipulation;
+    border: 1px solid rgba(248, 113, 113, .45); background: rgba(248, 113, 113, .1); color: #fca5a5;
+    font: 600 15px/1 "Space Grotesk", sans-serif; white-space: nowrap; transition: background .2s, border-color .2s, color .2s;
+  }
+  .dodge:hover { background: rgba(248, 113, 113, .16); }
+  .dodge.gave { border-color: rgba(96, 165, 250, .5); background: rgba(59, 130, 246, .12); color: var(--blue-t); }
+  .taunt {
+    position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%); pointer-events: none;
+    padding: 7px 11px; border-radius: 10px; background: var(--text); color: var(--bg); font: 600 13px/1.2 "Space Grotesk", sans-serif;
+    white-space: nowrap; opacity: 0; transition: opacity .2s;
+  }
+  .taunt.show { opacity: 1; }
+  .dodger.low .taunt { bottom: auto; top: calc(100% + 10px); }
+
+  /* React Bits ClickSpark */
+  .sparks { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 40; }
+
   /* ---------- scroll reveal (only when JS runs) ---------- */
   .js .reveal { opacity: 0; transform: translateY(16px); }
   .js .reveal.in {
@@ -339,12 +367,14 @@
     transition-delay: calc(var(--i, 0) * 70ms), calc(var(--i, 0) * 70ms), 0s, 0s;
   }
   .js .spot.reveal.in:hover { transform: translateY(-5px); transition-delay: 0s; }
+  /* React Bits TiltedCard: project tiles lean toward the cursor (JS sets --rx/--ry) */
+  .project.spot:hover, .js .project.spot.reveal.in:hover { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-5px); }
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .js .reveal { opacity: 1; transform: none; }
-    .spot:hover, .js .spot.reveal.in:hover, .btn:hover, .dock a:hover, .dock a:focus-visible { transform: none; }
+    .spot:hover, .js .spot.reveal.in:hover, .project.spot:hover, .js .project.spot.reveal.in:hover, .btn:hover, .dock a:hover, .dock a:focus-visible { transform: none; }
     .dock a:hover::after, .dock a:focus-visible::after { transform: translateX(-50%) scale(.8); }
   }
 </style>
@@ -405,7 +435,7 @@
         <div class="ghost" aria-hidden="true">01</div>
         <div class="about-text">
           <div class="label reveal">01 / About</div>
-          <p class="statement">I learn best by building something and seeing if it works. ML models, backend services, mobile apps, Unity games and drone hardware.</p>
+          <p class="statement sr">I learn best by building something and seeing if it works. ML models, backend services, mobile apps, Unity games and drone hardware.</p>
           <p class="body reveal">I'm studying for a B.Tech in AI &amp; Machine Learning at Atlas Skilltech University, with a minor in AI &amp; Data Science from IIT Mandi. Outside class I take on freelance work, enter hackathons and game jams, mentor other students, and build side projects like Box Box.</p>
           <div class="chips reveal">
             <span class="chip">Machine learning</span><span class="chip">Software</span><span class="chip">Game dev</span>
@@ -518,11 +548,21 @@
   <section id="contact" class="wrap contact">
     <div class="contact-card reveal">
       <div class="label">05 / Say hello</div>
-      <h2>Got an idea, a role or a project? Let's build something nice.</h2>
+      <h2 class="sr">Got an idea, a role or a project? Let's build something nice.</h2>
       <a class="btn light magnet" href="mailto:sohamdesai67@gmail.com">sohamdesai67@gmail.com <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
       <div class="socials">
         <a class="glass" href="https://www.linkedin.com/in/soham-desai-/" target="_blank" rel="noopener">LinkedIn</a>
         <a class="glass" href="https://github.com/soham2121" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+
+    <div class="dodge-zone reveal">
+      <p>Not a fan?</p>
+      <div class="dodge-field" id="dodge-field">
+        <div class="dodger" id="dodger">
+          <span class="taunt" id="taunt" aria-live="polite"></span>
+          <button class="dodge" id="dodge" type="button">Delete this portfolio</button>
+        </div>
       </div>
     </div>
   </section>
@@ -531,6 +571,7 @@
 </main>
 
 <footer class="wrap"><span>Made by Soham in Mumbai</span><span>© 2026</span></footer>
+<canvas class="sparks" aria-hidden="true"></canvas>
 
 <script>
   /* Background ported from React Bits (https://reactbits.dev): DotField and the landing-page
@@ -862,33 +903,62 @@
     }
     render();
 
-    // React Bits SpotlightCard: the card glow follows the cursor.
+    // React Bits SpotlightCard + TiltedCard: the glow follows the cursor, and project tiles lean toward it.
     document.addEventListener('pointermove', (e) => {
       const card = e.target.closest && e.target.closest('.spot');
       if (!card) return;
       const r = card.getBoundingClientRect();
-      card.style.setProperty('--mx', `${e.clientX - r.left}px`);
-      card.style.setProperty('--my', `${e.clientY - r.top}px`);
+      const x = e.clientX - r.left, y = e.clientY - r.top;
+      card.style.setProperty('--mx', `${x}px`);
+      card.style.setProperty('--my', `${y}px`);
+      if (!calm && card.classList.contains('project')) {
+        card.style.setProperty('--ry', `${(x / r.width - 0.5) * 10}deg`);
+        card.style.setProperty('--rx', `${(0.5 - y / r.height) * 10}deg`);
+      }
     }, { passive: true });
 
-    // React Bits ScrollReveal: the About statement lights up word by word as it scrolls into view.
-    const statement = document.querySelector('.statement');
-    const words = statement.textContent.trim().split(/\s+/);
-    statement.innerHTML = words.map((w) => `<span class="w">${esc(w)}</span>`).join(' ');
-    const spans = [...statement.children];
-    const lightWords = () => {
-      const r = statement.getBoundingClientRect(), vh = innerHeight;
-      const progress = calm ? 1 : Math.min(1, Math.max(0, (vh * 0.9 - r.top) / (r.height + vh * 0.4)));
-      const lit = Math.round(progress * spans.length);
-      spans.forEach((s, i) => s.classList.toggle('lit', i < lit));
+    // React Bits BlurText: the intro headline blurs in word by word (CSS animates each .word).
+    const h1 = document.querySelector('.hero h1');
+    let wordNo = 0;
+    const wrapWords = (text) => text.split(/(\s+)/)
+      .map((t) => (/^\s*$/.test(t) ? t : `<span class="word" style="--w:${wordNo++}">${esc(t)}</span>`)).join('');
+    h1.innerHTML = [...h1.childNodes].map((node) => {
+      if (node.nodeType === Node.TEXT_NODE) return wrapWords(node.textContent);
+      if (node.nodeName === 'BR') return '<br>';
+      node.classList.add('word');
+      node.style.setProperty('--w', wordNo++);
+      return node.outerHTML;
+    }).join('');
+
+    // React Bits ScrollReveal: big lines start tilted, faint and blurred, then settle word by word as you scroll.
+    const scrollLines = [...document.querySelectorAll('.sr')].map((el) => {
+      el.innerHTML = el.textContent.trim().split(/\s+/).map((w) => `<span class="w">${esc(w)}</span>`).join(' ');
+      return { el, words: [...el.children] };
+    });
+    const clamp01 = (v) => Math.min(1, Math.max(0, v));
+    const scrub = () => {
+      const vh = innerHeight;
+      for (const { el, words } of scrollLines) {
+        const top = el.getBoundingClientRect().top;
+        const read = calm ? 1 : clamp01((vh * 0.85 - top) / (vh * 0.4)); // words: top at 85% -> 45% of the screen
+        const turn = calm ? 1 : clamp01((vh - top) / (vh * 0.4));         // tilt: from entering to 60%
+        el.style.transform = turn < 1 ? `rotate(${3 * (1 - turn)}deg)` : '';
+        const spread = 4; // how many words fade at once
+        words.forEach((w, i) => {
+          const k = clamp01((read * (words.length + spread) - i) / spread);
+          w.style.opacity = 0.1 + 0.9 * k;
+          w.style.filter = k < 1 ? `blur(${4 * (1 - k)}px)` : '';
+        });
+      }
     };
     let ticking = false;
     addEventListener('scroll', () => {
       if (ticking) return;
       ticking = true;
-      requestAnimationFrame(() => { lightWords(); ticking = false; });
+      requestAnimationFrame(() => { scrub(); ticking = false; });
     }, { passive: true });
-    lightWords();
+    addEventListener('resize', scrub);
+    scrub();
 
     // React Bits Stack: drag the top fun-fact card away (or press the button) to see the next one.
     const stack = document.querySelector('.stack');
@@ -935,6 +1005,111 @@
         const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
         magnet.style.transform = Math.hypot(dx, dy) < 180 ? `translate(${dx * 0.18}px, ${dy * 0.3}px)` : '';
       }, { passive: true });
+    }
+
+    // React Bits DodgeField: "Delete this portfolio" runs from the cursor and taunts. It never deletes
+    // anything; after GIVE_UP dodges it gives in and turns into a feedback email link.
+    const field = document.getElementById('dodge-field');
+    const dodger = document.getElementById('dodger');
+    const dodgeBtn = document.getElementById('dodge');
+    const tauntEl = document.getElementById('taunt');
+    const TAUNTS = ['Nope', 'Too slow', 'Catch me', 'Not today', 'Almost!', 'Deleting? Rude.', 'I worked hard on this',
+      'Try the other hand', 'Still here', "You can't break me", 'Getting tired?', 'This is getting sad', 'Okay, last chance'];
+    const GIVE_UP = 15, RADIUS = 130, INSET = 12;
+    let pos = { x: 0, y: 0 }, dodges = 0, gaveUp = false, armed = true, tauntTimer;
+    const room = () => ({
+      x: Math.max(0, (field.clientWidth - dodger.offsetWidth) / 2 - INSET),
+      y: Math.max(0, (field.clientHeight - dodger.offsetHeight) / 2 - INSET),
+    });
+    const place = () => {
+      dodger.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+      dodger.classList.toggle('low', pos.y < 0); // keep the taunt bubble inside the field
+    };
+    const taunt = (text) => {
+      tauntEl.textContent = text;
+      tauntEl.classList.add('show');
+      clearTimeout(tauntTimer);
+      tauntTimer = setTimeout(() => tauntEl.classList.remove('show'), 1500);
+    };
+    const giveUp = () => {
+      gaveUp = true;
+      pos = { x: 0, y: 0 };
+      place();
+      dodgeBtn.textContent = 'Fine. Tell me why →';
+      dodgeBtn.classList.add('gave');
+      taunt('Okay, okay, you win');
+    };
+    const dodged = () => {
+      dodges++;
+      if (dodges >= GIVE_UP) giveUp();
+      else taunt(TAUNTS[(dodges - 1) % TAUNTS.length]);
+    };
+    const jump = () => {
+      const r = room();
+      pos = { x: (Math.random() * 2 - 1) * r.x, y: (Math.random() * 2 - 1) * r.y };
+      place();
+    };
+    document.addEventListener('pointermove', (e) => {
+      if (gaveUp || e.pointerType === 'touch') return;
+      const b = dodger.getBoundingClientRect();
+      const dx = b.left + b.width / 2 - e.clientX, dy = b.top + b.height / 2 - e.clientY;
+      const d = Math.hypot(dx, dy) || 1;
+      if (d > RADIUS) { armed = true; return; }
+      if (armed && d < RADIUS * 0.6) { armed = false; dodged(); if (gaveUp) return; }
+      const r = room(), push = (RADIUS - d) * 1.3;
+      const want = { x: pos.x + (dx / d) * push, y: pos.y + (dy / d) * push };
+      const next = { x: Math.max(-r.x, Math.min(r.x, want.x)), y: Math.max(-r.y, Math.min(r.y, want.y)) };
+      // Pinned against a wall with the cursor still close: hop somewhere else instead of getting caught.
+      const after = Math.hypot(dx + next.x - pos.x, dy + next.y - pos.y);
+      if (after < RADIUS * 0.45) return jump();
+      pos = next;
+      place();
+    }, { passive: true });
+    dodgeBtn.addEventListener('click', () => {
+      if (gaveUp) {
+        location.href = `mailto:sohamdesai67@gmail.com?subject=${encodeURIComponent('Portfolio feedback')}`;
+        return;
+      }
+      jump(); // keyboard, touch, or a lucky click: it still never deletes anything
+      dodged();
+    });
+
+    // React Bits ClickSpark: small blue sparks wherever you click.
+    if (!calm) {
+      const sparkCanvas = document.querySelector('.sparks');
+      const ctx = sparkCanvas.getContext('2d');
+      const COLORS = ['#60a5fa', '#93c5fd'], COUNT = 8, SPREAD = 18, LENGTH = 11, DURATION = 420;
+      let sparks = [], sparkRaf = 0;
+      const fit = () => {
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        sparkCanvas.width = innerWidth * dpr;
+        sparkCanvas.height = innerHeight * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+      fit();
+      addEventListener('resize', fit);
+      const drawSparks = (now) => {
+        ctx.clearRect(0, 0, innerWidth, innerHeight);
+        sparks = sparks.filter((s) => now - s.t < DURATION);
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        for (const s of sparks) {
+          const p = (now - s.t) / DURATION, eased = p * (2 - p); // ease-out
+          const from = eased * SPREAD, to = from + LENGTH * (1 - eased);
+          ctx.strokeStyle = s.color;
+          ctx.beginPath();
+          ctx.moveTo(s.x + from * Math.cos(s.a), s.y + from * Math.sin(s.a));
+          ctx.lineTo(s.x + to * Math.cos(s.a), s.y + to * Math.sin(s.a));
+          ctx.stroke();
+        }
+        sparkRaf = sparks.length ? requestAnimationFrame(drawSparks) : 0;
+      };
+      addEventListener('click', (e) => {
+        if (!e.detail) return; // keyboard "clicks" have no position
+        const t = performance.now();
+        for (let i = 0; i < COUNT; i++) sparks.push({ x: e.clientX, y: e.clientY, a: (2 * Math.PI * i) / COUNT, t, color: COLORS[i % 2] });
+        if (!sparkRaf) sparkRaf = requestAnimationFrame(drawSparks);
+      });
     }
 
     // Dock: mark the icon for the section in the middle of the screen.

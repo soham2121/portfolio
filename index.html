@@ -52,11 +52,14 @@
   a { color: var(--blue-t); text-decoration: none; }
   a:hover { color: #bfdbfe; }
   :focus-visible { outline: 2px solid var(--blue-l); outline-offset: 3px; border-radius: 8px; }
+  ::selection { background: rgba(96, 165, 250, .35); color: #fff; }
+  html { scrollbar-color: var(--border-hi) var(--bg); }
   .wrap { max-width: 1200px; margin: 0 auto; padding-inline: 24px; }
   @media (max-width: 600px) { .wrap { padding-inline: 16px; } }
   .mono { font-family: var(--mono); }
   .skip { position: absolute; left: 16px; top: -60px; z-index: 30; padding: 10px 16px; border-radius: 10px; background: var(--text); color: var(--bg); font-weight: 700; }
   .skip:focus { top: 16px; }
+  .skip:hover { color: var(--bg); }
 
   /* ---------- animated intro background (aurora + dot field), JS sets its height ---------- */
   .js body { background-image: none; }
@@ -78,7 +81,7 @@
     font-weight: 700; color: var(--text); transition: transform .25s var(--ease), box-shadow .25s, background .2s, border-color .2s;
   }
   .btn:hover { color: var(--text); transform: translateY(-2px); }
-  .btn.primary { background: var(--blue); color: #fff; box-shadow: 0 16px 40px -16px rgba(59, 130, 246, .8); }
+  .btn.primary { background: #2563eb; color: #fff; box-shadow: 0 16px 40px -16px rgba(59, 130, 246, .8); }
   .btn.primary:hover { color: #fff; box-shadow: 0 20px 50px -14px rgba(59, 130, 246, .9); }
   .btn.light { background: var(--text); color: var(--bg); }
   .btn.light:hover { color: var(--bg); }
@@ -111,7 +114,10 @@
     background: rgba(13, 18, 28, .72); border: 1px solid rgba(148, 163, 184, .18);
     backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
     box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .8);
+    transition: transform .5s var(--ease), opacity .4s;
   }
+  /* JS tucks the dock away while the intro is on screen, so it never covers the hero cards */
+  .dock.away:not(:focus-within) { transform: translate(-50%, 140%); opacity: 0; pointer-events: none; }
   .dock a {
     position: relative; display: flex; align-items: center; justify-content: center;
     width: 46px; height: 46px; border-radius: 14px; color: var(--body);
@@ -126,6 +132,16 @@
     white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .15s, transform .15s;
   }
   .dock a:hover::after, .dock a:focus-visible::after { opacity: 1; transform: translateX(-50%) scale(.8); }
+  /* Touch screens have no hover, so the labels sit under the icons instead */
+  @media (hover: none) {
+    .dock a { width: 58px; height: 54px; flex-direction: column; gap: 4px; }
+    .dock a:hover, .dock a:focus-visible { transform: none; }
+    .dock a::after, .dock a:hover::after, .dock a:focus-visible::after {
+      position: static; transform: none; opacity: 1; padding: 0; background: none; color: inherit; font: 500 10px/1 "Space Grotesk", sans-serif;
+    }
+    .dock a.active::before { display: none; }
+    .dock a.active { background: rgba(59, 130, 246, .18); }
+  }
 
   /* ---------- hero ---------- */
   .hero { padding-top: 96px; padding-bottom: 80px; display: flex; flex-direction: column; gap: 28px; }
@@ -152,6 +168,14 @@
   .js .hero h1 { animation: none; }
   .hero h1 .word { display: inline-block; animation: blur-in .9s var(--ease) both; animation-delay: calc(var(--w) * 70ms + .1s); }
   @keyframes blur-in { from { opacity: 0; filter: blur(10px); transform: translateY(20px); } 60% { filter: blur(2px); } }
+  /* think, play & fly each move like what they stand for. JS splits the first two into letters (.l). */
+  .think, .play, .fly { display: inline-block; }
+  .think .l { animation: fire 4.2s ease-in-out infinite; animation-delay: calc(var(--l) * 90ms + 1.6s); }
+  @keyframes fire { 0%, 14%, 100% { color: var(--blue-l); } 6% { color: #dbeafe; } }
+  .play .l { display: inline-block; animation: hop 3.6s var(--ease) infinite; animation-delay: calc(var(--l) * 80ms + 1.9s); }
+  @keyframes hop { 0%, 12%, 100% { transform: none; } 5% { transform: translateY(-.16em); } }
+  .fly { animation: hover-fly 2.8s ease-in-out 1.4s infinite alternate; }
+  @keyframes hover-fly { from { transform: translateY(.03em) rotate(-1.5deg); } to { transform: translateY(-.08em) rotate(1.5deg); } }
 
   /* ---------- toolbox marquee (React Bits ScrollVelocity + LogoLoop) ---------- */
   .toolbox { padding: 40px 0 64px; display: flex; flex-direction: column; gap: 22px; border-block: 1px solid #141a26; }
@@ -167,20 +191,8 @@
   @keyframes marquee { to { transform: translateX(-50%); } }
   .marquee:hover .track { animation-play-state: paused; }
 
-  /* ---------- ambient zone: grid + drifting glows + ghost numbers ---------- */
+  /* ---------- section zone + ghost numbers ---------- */
   .zone { position: relative; z-index: 0; }
-  .ambient { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-  .gridlines {
-    position: absolute; inset: 0;
-    background-image: linear-gradient(rgba(148, 163, 184, .07) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, .07) 1px, transparent 1px);
-    background-size: 64px 64px;
-    -webkit-mask-image: linear-gradient(transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(transparent, #000 5%, #000 95%, transparent);
-  }
-  .orb { position: absolute; border-radius: 50%; filter: blur(80px); animation: drift 22s ease-in-out infinite alternate; }
-  .orb.o1 { top: 2%; left: -12%; width: 620px; height: 620px; background: radial-gradient(circle, rgba(59, 130, 246, .42), transparent 70%); }
-  .orb.o2 { top: 26%; right: -14%; width: 680px; height: 680px; background: radial-gradient(circle, rgba(79, 209, 197, .26), transparent 70%); animation-delay: -6s; }
-  .orb.o3 { top: 52%; left: -16%; width: 640px; height: 640px; background: radial-gradient(circle, rgba(59, 130, 246, .34), transparent 70%); animation-delay: -12s; }
-  .orb.o4 { top: 78%; right: -10%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(96, 165, 250, .3), transparent 70%); animation-delay: -18s; }
   @keyframes drift { to { transform: translate(60px, -40px) scale(1.08); } }
   .zone section { padding-top: 140px; }
   .zone section:last-child { padding-bottom: 140px; }
@@ -240,6 +252,18 @@
     display: flex; align-items: flex-end; padding: 18px;
   }
   .cover span { font-size: 120px; line-height: .8; font-weight: 700; letter-spacing: -0.06em; color: transparent; -webkit-text-stroke: 1.5px rgba(96, 165, 250, .55); }
+  /* Real app screens rise out of the cover and fan out on hover */
+  .cover.phones { justify-content: center; padding: 22px 0 0; overflow: hidden; }
+  .phones img {
+    position: relative; width: 36%; max-width: 160px; height: auto; margin: 0 -5% -18%; border-radius: 16px;
+    border: 1px solid var(--border-hi); box-shadow: 0 18px 40px -14px rgba(0, 0, 0, .9); transition: transform .6s var(--ease);
+  }
+  .phones img:nth-child(1) { transform: rotate(-7deg) translateY(10%); }
+  .phones img:nth-child(2) { z-index: 1; }
+  .phones img:nth-child(3) { transform: rotate(7deg) translateY(10%); }
+  .project:hover .phones img:nth-child(1) { transform: rotate(-11deg) translate(-12%, 4%); }
+  .project:hover .phones img:nth-child(2) { transform: translateY(-6%); }
+  .project:hover .phones img:nth-child(3) { transform: rotate(11deg) translate(12%, 4%); }
   .kind { align-self: flex-start; padding: 6px 11px; border-radius: 999px; background: rgba(59, 130, 246, .1); color: var(--blue-t); font: 400 12px/1 var(--mono); }
   .project h3 { font-size: 26px; line-height: 1.2; letter-spacing: -0.02em; }
   .project p { color: var(--body); }
@@ -266,7 +290,7 @@
 
   /* ---------- experience ---------- */
   .exp { display: flex; flex-wrap: wrap; gap: 48px; }
-  .exp .head { flex: 1 1 280px; margin: 0; }
+  .exp .head { flex: 1 1 100%; margin: 0; }
   .timeline { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 48px; border-left: 1px solid var(--border); padding-left: 32px; }
   .entry { position: relative; display: flex; flex-direction: column; gap: 16px; }
   .entry::before {
@@ -279,7 +303,7 @@
   .entry > p { color: var(--muted); }
   .duties, .gigs { display: grid; gap: 12px; }
   .duties { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
-  .gigs { grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+  .gigs { grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); align-items: start; }
   .duty { padding: 18px; border-radius: 20px; }
   .duty b { display: block; }
   .duty p { margin-top: 6px; color: var(--body); line-height: 1.55; font-size: 15px; }
@@ -289,6 +313,13 @@
   .gig a { align-self: flex-start; padding: 10px 0 0; font-weight: 600; }
   .badge { font: 400 12px/1.4 var(--mono); padding: 3px 9px; border-radius: 999px; border: 1px solid rgba(52, 211, 153, .4); color: var(--green); }
   .gig-title { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  /* Screenshots of the live freelance sites */
+  .frame { overflow: hidden; border-radius: 14px; border: 1px solid var(--border); background: var(--surface-2); }
+  .frame img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top left; transition: transform .6s var(--ease); }
+  .gig:hover .frame img { transform: scale(1.03); }
+  .views { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .views figcaption { margin-top: 7px; font: 400 12px/1.2 var(--mono); color: var(--muted); }
+  .views .frame img { aspect-ratio: 4 / 3; }
 
   /* ---------- wins & learning ---------- */
   .wins { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; }
@@ -324,7 +355,7 @@
     animation: drift 18s ease-in-out infinite alternate;
   }
   .contact-card h2 { font-size: clamp(40px, 6.5vw, 84px); letter-spacing: -0.04em; max-width: 860px; }
-  .contact-card .btn.light { margin-top: 8px; font-size: 17px; padding: 18px 28px; box-shadow: 0 20px 60px -18px rgba(59, 130, 246, .8); overflow-wrap: anywhere; }
+  .contact-card .btn.light { margin-top: 8px; font-size: clamp(14px, 3.8vw, 17px); padding: 18px clamp(18px, 5vw, 28px); box-shadow: 0 20px 60px -18px rgba(59, 130, 246, .8); overflow-wrap: anywhere; }
   .magnet { transition: transform .3s var(--ease), box-shadow .25s; }
   .socials { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
   .socials a { padding: 14px 20px; border-radius: 999px; color: var(--text); font-weight: 600; }
@@ -337,7 +368,7 @@
   footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-block: 28px; border-top: 1px solid #141a26; color: var(--muted); font: 400 13px/1 var(--mono); }
 
   /* React Bits DodgeField: the "Delete this portfolio" button runs away */
-  .dodge-zone { margin-top: 72px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+  .dodge-zone { margin-bottom: 96px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
   .dodge-zone > p { color: var(--muted); font-size: 15px; }
   .dodge-field { position: relative; width: min(100%, 620px); height: 220px; display: grid; place-items: center; border: 1px dashed var(--border-hi); border-radius: 28px; }
   .dodger { position: relative; transition: transform .14s var(--ease); }
@@ -384,31 +415,32 @@
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="wrap">
-  <a class="logo" href="#top">soham<span>.dev</span></a>
+  <a class="logo" href="#top">soham <span>desai</span></a>
 </header>
 
 <nav class="dock" aria-label="Main">
   <a href="#about" aria-label="About"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.4-3.6 4.2-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></svg></a>
   <a href="#work" aria-label="Work"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="7" height="7" rx="2"/><rect x="13.5" y="4" width="7" height="7" rx="2"/><rect x="3.5" y="14" width="7" height="7" rx="2"/><rect x="13.5" y="14" width="7" height="7" rx="2"/></svg></a>
   <a href="#experience" aria-label="Experience"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/></svg></a>
-  <a href="#wins" aria-label="Wins &amp; learning"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 6H5v1.5A3.5 3.5 0 0 0 8.5 11M16 6h3v1.5a3.5 3.5 0 0 1-3.5 3.5M12 13v4M8.5 20h7"/></svg></a>
+  <a href="#wins" aria-label="Wins"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 6H5v1.5A3.5 3.5 0 0 0 8.5 11M16 6h3v1.5a3.5 3.5 0 0 1-3.5 3.5M12 13v4M8.5 20h7"/></svg></a>
   <a href="#contact" aria-label="Contact"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg></a>
 </nav>
 
 <main id="main">
   <section id="top" class="hero wrap">
     <div class="status glass">Open to internships &amp; freelance · Mumbai</div>
-    <h1>Hi, I'm Soham.<br>I make things that <span class="b">think</span>, <span class="t">play</span> &amp; <span class="b">fly</span>.</h1>
+    <h1>Hi, I'm Soham.<br>I make things that <span class="b"><span class="think">think</span></span>, <span class="t"><span class="play">play</span></span> &amp; <span class="b"><span class="fly">fly</span></span>.</h1>
     <p class="lead">AI &amp; ML student building machine learning models, backend services, mobile apps, Unity games and the odd drone.</p>
     <div class="cta">
       <a class="btn primary" href="#work">Peek at my work <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       <a class="btn glass" href="#contact">Say hello</a>
+      <a class="btn glass" href="Soham-Desai-Resume.pdf" download>Résumé (PDF) <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></a>
     </div>
     <div class="now">
       <div class="card spot"><small>Lately</small><b>Building Box Box</b><span>F1 widgets for the Windows desktop</span></div>
       <div class="card spot"><small>Studying</small><b>B.Tech AI &amp; ML</b><span>Atlas Skilltech · Minor at IIT Mandi</span></div>
       <div class="card spot"><small>Previously</small><b>Intern at Sypha.AI</b><span>Backend for an AI coding assistant</span></div>
-      <div class="card spot"><small>Proudest win</small><b>1st, national game design</b><span>Design Championship India</span></div>
+      <div class="card spot"><small>Freelance</small><b>Kala Vyasanga</b><span>A marketplace for handmade craft</span></div>
     </div>
   </section>
 
@@ -428,7 +460,6 @@
   </section>
 
   <div class="zone">
-    <div class="ambient" aria-hidden="true"><div class="gridlines"></div><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="orb o4"></div></div>
 
     <section id="about" class="wrap">
       <div class="inner about">
@@ -494,13 +525,20 @@
             <span class="pill">Freelance</span>
             <div class="gigs">
               <div class="card spot gig">
+                <div class="frame"><img src="img/selective.jpg" width="1200" height="569" loading="lazy" alt="Selective Systems window configurator: a sliding window preview beside the system and window-type options"></div>
                 <h4>Imperio Selective Systems</h4>
                 <p>A window configurator and quoting platform: design windows, upload bulk project files and get proforma quotes behind phone verification.</p>
                 <a href="https://selective-window-config.vercel.app/" target="_blank" rel="noopener">Visit the site →</a>
               </div>
               <div class="card spot gig">
+                <div class="frame"><img src="img/kala-home.jpg" width="1200" height="750" loading="lazy" alt="Kala Vyasanga homepage: 'Crafted for meaningful occasions' beside a ring of handmade product photos"></div>
                 <div class="gig-title"><h4>Kala Vyasanga</h4><span class="badge">In progress</span></div>
-                <p>A curated marketplace connecting artisans' handmade craft with buyers who value it.</p>
+                <p>A curated marketplace connecting artisans' handmade craft with buyers who value it. Three sides: the shop, a studio where artisans run orders and payouts, and an admin panel that reviews sellers, products and refunds.</p>
+                <div class="views">
+                  <figure><div class="frame"><img src="img/kala-product.jpg" width="800" height="500" loading="lazy" alt="Product page for a kundan and pearl diya platter"></div><figcaption>Shop</figcaption></figure>
+                  <figure><div class="frame"><img src="img/kala-artisan.jpg" width="800" height="381" loading="lazy" alt="Artisan studio orders board, from new to delivered"></div><figcaption>Artisan studio</figcaption></figure>
+                  <figure><div class="frame"><img src="img/kala-admin.jpg" width="800" height="381" loading="lazy" alt="Admin overview of refund requests, applications and approvals"></div><figcaption>Admin</figcaption></figure>
+                </div>
                 <a href="https://kala-vyasanga.vercel.app" target="_blank" rel="noopener">Visit the site →</a>
               </div>
             </div>
@@ -514,8 +552,8 @@
         <div class="ghost" aria-hidden="true">04</div>
         <div class="head reveal"><div class="label">04 / Wins &amp; learning</div><h2>Little wins along the way</h2></div>
         <div class="wins stagger">
-          <div class="card spot win"><div class="num" style="color: var(--blue-l)">1st</div><b>Game design</b><span>Design Championship India, 2019</span></div>
           <div class="card spot win"><div class="num" style="color: var(--teal)">SIH</div><b>Shortlisted</b><span>Smart India Hackathon, 2024</span></div>
+          <div class="card spot win"><div class="num" style="color: var(--blue-l)">1st</div><b>Game design</b><span>Design Championship India, 2019</span></div>
           <div class="card spot win"><div class="num">3rd</div><b>Game design</b><span>Design Championship India, 2018</span></div>
           <div class="card spot win"><div class="num">5th</div><b>FIRST LEGO League</b><span>National robotics</span></div>
         </div>
@@ -540,12 +578,22 @@
             </ul>
           </div>
         </div>
-        <p class="extra reveal">Also: Subject Topper in ICT (10th) &amp; Computer Science (12th) · 3rd, Interstate Football · State Champion, Volleyball</p>
+        <p class="extra reveal">Also: Subject Topper in ICT (10th) &amp; Computer Science (12th)</p>
       </div>
     </section>
   </div>
 
   <section id="contact" class="wrap contact">
+    <div class="dodge-zone reveal">
+      <p>Not a fan?</p>
+      <div class="dodge-field" id="dodge-field">
+        <div class="dodger" id="dodger">
+          <span class="taunt" id="taunt" aria-live="polite"></span>
+          <button class="dodge" id="dodge" type="button" aria-label="Delete this portfolio (a joke: it never deletes anything)">Delete this portfolio</button>
+        </div>
+      </div>
+    </div>
+
     <div class="contact-card reveal">
       <div class="label">05 / Say hello</div>
       <h2 class="sr">Got an idea, a role or a project? Let's build something nice.</h2>
@@ -553,16 +601,7 @@
       <div class="socials">
         <a class="glass" href="https://www.linkedin.com/in/soham-desai-/" target="_blank" rel="noopener">LinkedIn</a>
         <a class="glass" href="https://github.com/soham2121" target="_blank" rel="noopener">GitHub</a>
-      </div>
-    </div>
-
-    <div class="dodge-zone reveal">
-      <p>Not a fan?</p>
-      <div class="dodge-field" id="dodge-field">
-        <div class="dodger" id="dodger">
-          <span class="taunt" id="taunt" aria-live="polite"></span>
-          <button class="dodge" id="dodge" type="button">Delete this portfolio</button>
-        </div>
+        <a class="glass" href="Soham-Desai-Resume.pdf" download>Résumé (PDF)</a>
       </div>
     </div>
   </section>
@@ -803,13 +842,14 @@
      PROJECTS: add a new project by adding one entry here. The grid, filter tabs, counts and the
      "Also made" list all update from this list.
        cat       'ai' | 'software' | 'games' | 'hardware'
-       featured  true: big tile in the grid (tall: true makes it double height, glyph is its big letter)
+       featured  true: big tile in the grid (tall: true makes it double height, glyph is its big letter,
+                 shots: up to 3 [src, alt] phone screenshots that replace the glyph)
                  otherwise it goes in the "Also made" list
        href      link to the code or live site; leave it out and the project shows without a link
      --------------------------------------------------------------------------------------------- */
   const GH = 'https://github.com/soham2121/';
   const PROJECTS = [
-    { featured: true, tall: true, glyph: 'F', cat: 'software', kind: 'Mobile app · Fitness', title: 'Forge', desc: 'Fitness and health tracker with workout logging, weekly and cycle scheduling, analytics, and offline food and calorie tracking.', tags: ['React Native', 'Expo', 'TypeScript', 'Supabase'], href: 'https://forge-umber-one.vercel.app', linkLabel: 'Try the demo' },
+    { featured: true, tall: true, glyph: 'F', shots: [['img/forge-workout.jpg', 'Forge workout logger mid-session'], ['img/forge-dashboard.jpg', 'Forge dashboard with calories and goals'], ['img/forge-nutrition.jpg', 'Forge nutrition tracker with daily calories ring']], cat: 'software', kind: 'Mobile app · Fitness', title: 'Forge', desc: 'Fitness and health tracker with workout logging, weekly and cycle scheduling, analytics, and offline food and calorie tracking.', tags: ['React Native', 'Expo', 'TypeScript', 'Supabase'], href: 'https://forge-umber-one.vercel.app', linkLabel: 'Try the demo' },
     { featured: true, tall: true, glyph: 'αβ', cat: 'ai', kind: 'AI / ML', title: 'Protein Structure Prediction', desc: 'Predicts 8-state protein secondary structure from amino-acid sequences, using multi-kernel CNN layers feeding a GRU.', tags: ['Python', 'PyTorch', 'CNN + GRU'], href: GH + 'Protein-prediction' },
     { featured: true, cat: 'software', kind: 'Desktop app · F1', title: 'Box Box', desc: 'Formula 1 as Windows desktop widgets: live timing, track map, standings and a pit-stop strategy simulator. Replays any session since 2018.', tags: ['Python', 'PySide6', 'FastF1'], href: GH + 'box-box' },
     { featured: true, cat: 'ai', kind: 'Team project · AI', title: 'Resonance', desc: 'AI music recommendation platform. I built the micro-location tracking that feeds the recommendation engine.', tags: ['FastAPI', 'Next.js', 'PostgreSQL', 'Redis'], href: 'https://github.com/arjun-nair1090/Resonance' },
@@ -860,7 +900,8 @@
     const inCat = (id) => PROJECTS.filter((p) => id === 'all' || p.cat === id);
     const tile = (p, i) => `
       <article class="card spot project${p.tall ? ' tall' : ''} reveal" style="--i:${Math.min(i, 5)}">
-        ${p.tall ? `<div class="cover" aria-hidden="true"><span>${esc(p.glyph)}</span></div>` : ''}
+        ${p.shots ? `<div class="cover phones">${p.shots.map(([src, alt]) => `<img src="${esc(src)}" alt="${esc(alt)}" width="391" height="849" loading="lazy">`).join('')}</div>`
+          : p.tall ? `<div class="cover" aria-hidden="true"><span>${esc(p.glyph)}</span></div>` : ''}
         <span class="kind">${esc(p.kind)}</span>
         <h3>${esc(p.title)}</h3>
         <p>${esc(p.desc)}</p>
@@ -917,6 +958,11 @@
       }
     }, { passive: true });
 
+    // "think" fires letter by letter and "play" hops letter by letter (CSS animates each .l).
+    document.querySelectorAll('.think, .play').forEach((el) => {
+      el.innerHTML = [...el.textContent].map((c, i) => `<span class="l" style="--l:${i}">${esc(c)}</span>`).join('');
+    });
+
     // React Bits BlurText: the intro headline blurs in word by word (CSS animates each .word).
     const h1 = document.querySelector('.hero h1');
     let wordNo = 0;
@@ -940,13 +986,13 @@
       const vh = innerHeight;
       for (const { el, words } of scrollLines) {
         const top = el.getBoundingClientRect().top;
-        const read = calm ? 1 : clamp01((vh * 0.85 - top) / (vh * 0.4)); // words: top at 85% -> 45% of the screen
-        const turn = calm ? 1 : clamp01((vh - top) / (vh * 0.4));         // tilt: from entering to 60%
+        const read = calm ? 1 : clamp01((vh * 0.95 - top) / (vh * 0.3)); // words: top at 95% -> 65% of the screen, so they're clear by mid-screen
+        const turn = calm ? 1 : clamp01((vh - top) / (vh * 0.35));       // tilt: from entering to 65%
         el.style.transform = turn < 1 ? `rotate(${3 * (1 - turn)}deg)` : '';
         const spread = 4; // how many words fade at once
         words.forEach((w, i) => {
           const k = clamp01((read * (words.length + spread) - i) / spread);
-          w.style.opacity = 0.1 + 0.9 * k;
+          w.style.opacity = 0.2 + 0.8 * k;
           w.style.filter = k < 1 ? `blur(${4 * (1 - k)}px)` : '';
         });
       }
@@ -1036,6 +1082,7 @@
       pos = { x: 0, y: 0 };
       place();
       dodgeBtn.textContent = 'Fine. Tell me why →';
+      dodgeBtn.removeAttribute('aria-label');
       dodgeBtn.classList.add('gave');
       taunt('Okay, okay, you win');
     };
@@ -1121,6 +1168,11 @@
       });
     }, { rootMargin: '-45% 0px -50% 0px' });
     document.querySelectorAll('main section[id]').forEach((s) => spy.observe(s));
+
+    // Dock stays tucked away until the hero buttons scroll off, so it never sits on the intro cards.
+    const dock = document.querySelector('.dock');
+    new IntersectionObserver(([e]) => dock.classList.toggle('away', e.isIntersecting))
+      .observe(document.querySelector('.hero .cta'));
   })();
 </script>
 </body>
